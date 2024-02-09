@@ -1,0 +1,18 @@
+{
+  "name": "shiro",
+  "version": "0.0.1",
+  "description": "A fishy bot uwu.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node ."
+  },
+  "keywords": [],
+  "author": "Lucía",
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "discord-arts": "^0.5.8",
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.3.2",
+    "mongoose": "^7.6.8"
+  }
+}
