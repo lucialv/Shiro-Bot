@@ -34,7 +34,6 @@ module.exports = {
       "You do not have the permission to use this command.",
     notHasPermissionComponent:
       "You do not have the permission to use this component.",
-    missingDevIDsMessage:
-      "This is a developer only command, but unable to execute due to missing user IDs in configuration file.",
+    missingDevIDsMessage: "This is a developer only command.",
   },
 };
