@@ -27,23 +27,53 @@ module.exports = {
       const pez = pezAleatorio[0];
       const userId = interaction.user.id;
       let pezNivel = Math.floor(Math.random() * 20) + 1;
-      // Obtener el contador de capturas del usuario
-      let userCaptureCount = await UserPez.countDocuments({ userId });
 
-      // Incrementar el contador de capturas
-      userCaptureCount++;
+      // Calcular la probabilidad de captura basada en la rareza del pez
+      let probabilidadCaptura = 0.5; // Probabilidad base
+      switch (pez.rareza) {
+        case "Común":
+          probabilidadCaptura = 0.8;
+          break;
+        case "Poco común":
+          probabilidadCaptura = 0.7;
+          break;
+        case "Raro":
+          probabilidadCaptura = 0.6;
+          break;
+        case "Épico":
+          probabilidadCaptura = 0.5;
+          break;
+        case "Legendario":
+          probabilidadCaptura = 0.3;
+          break;
+        case "Mítico":
+          probabilidadCaptura = 0.1;
+          break;
+      }
 
-      // Agregar el pez al inventario del usuario en la base de datos
-      const userPez = new UserPez({
-        userId,
-        pezId: pez._id,
-        rareza: pez.rareza,
-        nivel: pezNivel,
-        captureCount: userCaptureCount,
-      });
-      await userPez.save();
+      // Determinar si el pez es capturado o no basado en la probabilidad
+      const capturado = Math.random() < probabilidadCaptura;
 
-      await interaction.reply(`¡Has pescado un ${pez.nombre}!`);
+      if (capturado) {
+        // Obtener el contador de capturas del usuario
+        let userCaptureCount = await UserPez.countDocuments({ userId });
+        // Incrementar el contador de capturas
+        userCaptureCount++;
+
+        // Agregar el pez al inventario del usuario en la base de datos
+        const userPez = new UserPez({
+          userId,
+          pezId: pez._id,
+          rareza: pez.rareza,
+          nivel: pezNivel,
+          captureCount: userCaptureCount,
+        });
+        await userPez.save();
+
+        await interaction.reply(`¡Has pescado un ${pez.nombre}!`);
+      } else {
+        await interaction.reply(`No has logrado capturar ningún pez esta vez.`);
+      }
     } catch (error) {
       console.error("Error al pescar:", error);
       await interaction.reply("Hubo un error al intentar pescar.");
