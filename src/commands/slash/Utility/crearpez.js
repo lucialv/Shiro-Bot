@@ -7,7 +7,7 @@ const Pez = require("../../../schemas/Pez");
 
 module.exports = {
   structure: new SlashCommandBuilder()
-    .setName("crearpez")
+    .setName("newfish")
     .setDescription("Crea un nuevo pez")
     .addStringOption((option) =>
       option

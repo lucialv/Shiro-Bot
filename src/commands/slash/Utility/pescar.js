@@ -4,11 +4,11 @@ const {
 } = require("discord.js");
 const ExtendedClient = require("../../../class/ExtendedClient");
 const Pez = require("../../../schemas/Pez");
-const UserPez = require("../../../schemas/UserPez");
+const Usuario = require("../../../schemas/Usuario");
 
 module.exports = {
   structure: new SlashCommandBuilder()
-    .setName("pescar")
+    .setName("fish")
     .setDescription("Pesca un pez aleatorio"),
   /**
    * @param {ExtendedClient} client
@@ -16,6 +16,8 @@ module.exports = {
    */
   run: async (client, interaction) => {
     try {
+      const userId = interaction.user.id;
+
       // Obtener un pez aleatorio de la base de datos
       const pezAleatorio = await Pez.aggregate([{ $sample: { size: 1 } }]);
       if (pezAleatorio.length === 0) {
@@ -25,7 +27,6 @@ module.exports = {
       }
 
       const pez = pezAleatorio[0];
-      const userId = interaction.user.id;
       let pezNivel = Math.floor(Math.random() * 20) + 1;
 
       // Calcular la probabilidad de captura basada en la rareza del pez
@@ -55,22 +56,39 @@ module.exports = {
       const capturado = Math.random() < probabilidadCaptura;
 
       if (capturado) {
-        // Obtener el contador de capturas del usuario
-        let userCaptureCount = await UserPez.countDocuments({ userId });
-        // Incrementar el contador de capturas
-        userCaptureCount++;
+        // Obtener el usuario actual o crear uno nuevo si no existe
+        let usuario = await Usuario.findOne({ idDiscord: userId });
+        if (!usuario) {
+          usuario = await Usuario.create({
+            idDiscord: userId,
+            nombre: interaction.user.username,
+            dinero: 0,
+            inventario: [],
+            donator: false,
+            capturados: 0, // Añadimos el contador de peces capturados
+          });
+        }
 
-        // Agregar el pez al inventario del usuario en la base de datos
-        const userPez = new UserPez({
-          userId,
+        // Agregar los atributos del pez capturado al usuario
+        usuario.peces.push({
           pezId: pez._id,
+          nombre: pez.nombre,
           rareza: pez.rareza,
           nivel: pezNivel,
-          captureCount: userCaptureCount,
         });
-        await userPez.save();
 
-        await interaction.reply(`¡Has pescado un ${pez.nombre}!`);
+        // Incrementar el contador de peces capturados
+        usuario.capturados++;
+
+        // Añadir dinero al usuario
+        const dineroGanado = Math.floor(Math.random() * 20) + 1;
+        usuario.dinero += dineroGanado;
+
+        await usuario.save();
+
+        await interaction.reply(
+          `¡Has pescado un ${pez.nombre} y has ganado ${dineroGanado} monedas!`
+        );
       } else {
         await interaction.reply(`No has logrado capturar ningún pez esta vez.`);
       }

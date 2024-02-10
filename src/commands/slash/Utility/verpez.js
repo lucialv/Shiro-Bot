@@ -4,12 +4,12 @@ const {
   EmbedBuilder,
 } = require("discord.js");
 const ExtendedClient = require("../../../class/ExtendedClient");
-const UserPez = require("../../../schemas/UserPez");
+const Usuario = require("../../../schemas/Usuario");
 const Pez = require("../../../schemas/Pez");
 
 module.exports = {
   structure: new SlashCommandBuilder()
-    .setName("verpez")
+    .setName("fishinfo")
     .setDescription("Muestra información detallada de un pez")
     .addIntegerOption((option) =>
       option
@@ -24,27 +24,31 @@ module.exports = {
   run: async (client, interaction) => {
     try {
       const userId = interaction.user.id;
-      const pezId = interaction.options.getInteger("id");
+      const pezIndex = interaction.options.getInteger("id") - 1;
 
-      // Buscar el pez del usuario en la base de datos
-      const userPez = await UserPez.findOne({
-        userId,
-        captureCount: pezId,
-      }).populate("pezId");
-      if (!userPez) {
+      // Obtener el usuario y sus peces de la base de datos
+      const usuario = await Usuario.findOne({ idDiscord: userId });
+      if (
+        !usuario ||
+        !usuario.peces ||
+        usuario.peces.length === 0 ||
+        pezIndex < 0 ||
+        pezIndex >= usuario.peces.length
+      ) {
         return await interaction.reply("No tienes un pez con esa ID.");
       }
 
-      // Obtener información del pez desde la base de datos
-      const pez = userPez.pezId;
+      const pez = usuario.peces[pezIndex];
+      const pezInfo = await Pez.findById(pez.pezId);
 
-      const EmbedInfoPez = new EmbedBuilder()
+      // Construir el embed con la información del pez
+      const embed = new EmbedBuilder()
         .setTitle(pez.nombre)
-        .setDescription(`Rareza: ${pez.rareza}\nNivel: ${userPez.nivel}`)
-        .setImage(pez.foto)
-        .setColor("#FFC0CB");
+        .setDescription(`Rareza: ${pezInfo.rareza}\nNivel: ${pez.nivel}`)
+        .setColor("#FFC0CB")
+        .setImage(pezInfo.foto);
 
-      await interaction.reply({ embeds: [EmbedInfoPez] });
+      await interaction.reply({ embeds: [embed] });
     } catch (error) {
       console.error("Error al ver el pez:", error);
       await interaction.reply("Hubo un error al intentar ver el pez.");

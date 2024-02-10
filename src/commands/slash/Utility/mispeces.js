@@ -3,12 +3,11 @@ const {
   SlashCommandBuilder,
 } = require("discord.js");
 const ExtendedClient = require("../../../class/ExtendedClient");
-const UserPez = require("../../../schemas/UserPez");
-const Pez = require("../../../schemas/Pez");
+const Usuario = require("../../../schemas/Usuario");
 
 module.exports = {
   structure: new SlashCommandBuilder()
-    .setName("mispeces")
+    .setName("fishes")
     .setDescription("Muestra los peces que tienes en tu inventario"),
   /**
    * @param {ExtendedClient} client
@@ -18,10 +17,10 @@ module.exports = {
     try {
       const userId = interaction.user.id;
 
-      // Buscar los peces del usuario en la base de datos
-      const userPeces = await UserPez.find({ userId }).populate("pezId");
+      // Buscar al usuario en la base de datos
+      const usuario = await Usuario.findOne({ idDiscord: userId });
 
-      if (userPeces.length === 0) {
+      if (!usuario || usuario.peces.length === 0) {
         return await interaction.reply(
           "No tienes ningún pez en tu inventario."
         );
@@ -29,10 +28,10 @@ module.exports = {
 
       // Crear un mensaje con la lista de peces del usuario
       let message = "Tienes los siguientes peces en tu inventario:\n";
-      userPeces.forEach((userPez, index) => {
-        message += `- ID: ${index + 1} | ${userPez.pezId.nombre} (${
-          userPez.rareza
-        }) (Nivel ${userPez.nivel})\n`;
+      usuario.peces.forEach((pez, index) => {
+        message += `- ID: \`${index + 1}\` | ${pez.nombre} (${
+          pez.rareza
+        }) (Nivel ${pez.nivel})\n`;
       });
 
       await interaction.reply(message);
