@@ -5,16 +5,17 @@ const PezSchema = new Schema({
   nombre: { type: String, required: true },
   rareza: {
     type: String,
-    enum: ["Común", "Poco común", "Raro", "Épico", "Legendario", "Mítico"],
+    enum: ["Common", "Rare", "Very rare", "Epic", "Mitic", "Legendary"],
     required: true,
   },
   nivel: { type: Number, required: true },
+  favourite: { type: Boolean, default: false },
 });
 
 const UsuarioSchema = new Schema({
   idDiscord: String,
   nombre: String,
-  peces: [PezSchema], // Ahora peces es una matriz de objetos definidos por PezSchema
+  peces: [PezSchema],
   dinero: { type: Number, default: 0 },
   inventario: { type: Array, required: false },
   donator: { type: Boolean, required: false },

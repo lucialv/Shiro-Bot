@@ -50,7 +50,6 @@ module.exports = {
       for (const itemId in itemCounts) {
         if (itemCounts.hasOwnProperty(itemId)) {
           const itemCount = itemCounts[itemId];
-          // Buscar el item por su idUso en lugar de por _id
           const item = await Item.findOne({ idUso: itemId });
 
           if (item) {

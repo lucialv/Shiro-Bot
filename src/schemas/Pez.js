@@ -4,7 +4,7 @@ const PezSchema = new Schema({
   nombre: String,
   rareza: {
     type: String,
-    enum: ["Común", "Poco común", "Raro", "Épico", "Legendario", "Mítico"],
+    enum: ["Common", "Rare", "Very rare", "Epic", "Mitic", "Legendary"],
   },
   foto: String,
 });

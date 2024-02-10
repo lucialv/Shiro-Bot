@@ -32,22 +32,22 @@ module.exports = {
       // Calcular la probabilidad de captura basada en la rareza del pez
       let probabilidadCaptura = 0.5; // Probabilidad base
       switch (pez.rareza) {
-        case "Común":
+        case "Common":
           probabilidadCaptura = 0.8;
           break;
-        case "Poco común":
+        case "Rare":
           probabilidadCaptura = 0.7;
           break;
-        case "Raro":
+        case "Very rare":
           probabilidadCaptura = 0.6;
           break;
-        case "Épico":
+        case "Epic":
           probabilidadCaptura = 0.5;
           break;
-        case "Legendario":
+        case "Mitic":
           probabilidadCaptura = 0.3;
           break;
-        case "Mítico":
+        case "Legendary":
           probabilidadCaptura = 0.1;
           break;
       }

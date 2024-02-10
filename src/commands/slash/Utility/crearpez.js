@@ -21,12 +21,12 @@ module.exports = {
         .setDescription("Rareza del pez")
         .setRequired(true)
         .addChoices(
-          { name: "Común", value: "Común" },
-          { name: "Poco común", value: "Poco común" },
-          { name: "Raro", value: "Raro" },
-          { name: "Épico", value: "Épico" },
-          { name: "Legendario", value: "Legendario" },
-          { name: "Mítico", value: "Mítico" }
+          { name: "Common", value: "Common" },
+          { name: "Rare", value: "Rare" },
+          { name: "Very rare", value: "Very rare" },
+          { name: "Epic", value: "Epic" },
+          { name: "Mitic", value: "Mitic" },
+          { name: "Legendary", value: "Legendary" }
         )
     )
     .addStringOption((option) =>
