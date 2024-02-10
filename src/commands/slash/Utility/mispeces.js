@@ -19,6 +19,11 @@ const rarezaEmojis = {
     "<:mitic1:1205881199545811046><:mitic2:1205881200695316480><:mitic3:1205881201970126868><:mitic4:1205881207653670973><:mitic5:1205881208878145566>",
 };
 
+const generoEmojis = {
+  Boy: "<:male:1205911279714435143>",
+  Girl: "<:female:1205911278791430204>",
+};
+
 module.exports = {
   structure: new SlashCommandBuilder()
     .setName("fishes")
@@ -52,16 +57,17 @@ module.exports = {
       usuario.peces.forEach((pez, index) => {
         // Obtener el emoji correspondiente a la rareza del pez
         const rarezaEmoji = rarezaEmojis[pez.rareza] || "";
+        const generoEmoji = generoEmojis[pez.genero] || "";
 
         // Agregar la cadena de texto si el pez está marcado como favorito
         const favoritoText = pez.favourite
-          ? " <:fav1:1205882167029141585><:fav2:1205882168333705216><:fav3:1205882169457774622>"
+          ? " <:heartyy:1205896133277253694>"
           : "";
 
         // Agregar el pez al mensaje con su rareza, emoji y cadena de texto de favorito
         description += `- ID: \`${index + 1}\` | ${
           pez.nombre
-        } ${rarezaEmoji} Nivel ${pez.nivel} ${favoritoText}\n`;
+        } ${generoEmoji} ${rarezaEmoji} Nivel ${pez.nivel} ${favoritoText}\n`;
       });
       embed.setDescription(description);
 

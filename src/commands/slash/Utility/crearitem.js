@@ -7,7 +7,7 @@ const Item = require("../../../schemas/Item");
 
 module.exports = {
   structure: new SlashCommandBuilder()
-    .setName("createitem")
+    .setName("newitem")
     .setDescription("Crea un nuevo item")
     .addStringOption((option) =>
       option
@@ -58,6 +58,9 @@ module.exports = {
         .setDescription("Emoji del nuevo item")
         .setRequired(true)
     ),
+  options: {
+    developers: true,
+  },
   /**
    * @param {ExtendedClient} client
    * @param {ChatInputCommandInteraction} interaction

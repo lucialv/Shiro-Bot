@@ -6,14 +6,14 @@ const Usuario = require("../../../schemas/Usuario");
 
 module.exports = {
   structure: new SlashCommandBuilder()
-    .setName("fav")
-    .setDescription("Marca un pez como favorito")
+    .setName("select")
+    .setDescription(
+      "Selecciona un pez para poder subirlo de nivel y que te acompañe en tus aventuras."
+    )
     .addIntegerOption((option) =>
       option
         .setName("numero_pez")
-        .setDescription(
-          "Número del pez en tu inventario a marcar como favorito"
-        )
+        .setDescription("Número del pez en tu inventario a seleccionar")
         .setRequired(true)
     ),
   /**
@@ -44,27 +44,26 @@ module.exports = {
         );
       }
 
-      if (usuario.peces[numeroPez - 1].favourite) {
-        return await interaction.reply(
-          "El pez seleccionado ya está marcado como favorito."
-        );
+      // Verificar si el pez ya está seleccionado
+      if (usuario.peces[numeroPez - 1].selected) {
+        return await interaction.reply("El pez ya está seleccionado.");
       }
 
       // Marcar el pez como favorito
       const pezIndex = numeroPez - 1;
-      usuario.peces[pezIndex].favourite = true;
+      usuario.peces[pezIndex].selected = true;
 
       // Guardar los cambios en la base de datos
       await usuario.save();
 
       await interaction.reply(
-        `El pez número \`${numeroPez}\` ha sido marcado como favorito.`
+        `El pez \`${
+          usuario.peces[numeroPez - 1].nombre
+        }\` ha sido seleccionado.`
       );
     } catch (error) {
-      console.error("Error al marcar el pez como favorito:", error);
-      await interaction.reply(
-        "Hubo un error al intentar marcar el pez como favorito."
-      );
+      console.error("Error al seleccionar pez:", error);
+      await interaction.reply("Hubo un error al intentar seleccionar el pez.");
     }
   },
 };

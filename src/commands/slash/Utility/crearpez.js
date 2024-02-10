@@ -35,6 +35,9 @@ module.exports = {
         .setDescription("URL de la foto del pez")
         .setRequired(true)
     ),
+  options: {
+    developers: true,
+  },
   /**
    * @param {ExtendedClient} client
    * @param {ChatInputCommandInteraction} interaction

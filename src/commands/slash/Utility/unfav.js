@@ -6,13 +6,13 @@ const Usuario = require("../../../schemas/Usuario");
 
 module.exports = {
   structure: new SlashCommandBuilder()
-    .setName("fav")
-    .setDescription("Marca un pez como favorito")
+    .setName("unfav")
+    .setDescription("Desmarca un pez como favorito")
     .addIntegerOption((option) =>
       option
         .setName("numero_pez")
         .setDescription(
-          "Número del pez en tu inventario a marcar como favorito"
+          "Número del pez en tu inventario a desmarcar como favorito"
         )
         .setRequired(true)
     ),
@@ -44,26 +44,26 @@ module.exports = {
         );
       }
 
-      if (usuario.peces[numeroPez - 1].favourite) {
+      if (usuario.peces[numeroPez - 1].favourite === false) {
         return await interaction.reply(
-          "El pez seleccionado ya está marcado como favorito."
+          "El pez seleccionado no está marcado como favorito."
         );
       }
 
       // Marcar el pez como favorito
       const pezIndex = numeroPez - 1;
-      usuario.peces[pezIndex].favourite = true;
+      usuario.peces[pezIndex].favourite = false;
 
       // Guardar los cambios en la base de datos
       await usuario.save();
 
       await interaction.reply(
-        `El pez número \`${numeroPez}\` ha sido marcado como favorito.`
+        `El pez número \`${numeroPez}\` ha sido desmarcado como favorito.`
       );
     } catch (error) {
-      console.error("Error al marcar el pez como favorito:", error);
+      console.error("Error al desmarcar el pez como favorito:", error);
       await interaction.reply(
-        "Hubo un error al intentar marcar el pez como favorito."
+        "Hubo un error al intentar desmarcar el pez como favorito."
       );
     }
   },

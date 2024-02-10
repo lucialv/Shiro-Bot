@@ -6,14 +6,18 @@ const Usuario = require("../../../schemas/Usuario");
 
 module.exports = {
   structure: new SlashCommandBuilder()
-    .setName("fav")
-    .setDescription("Marca un pez como favorito")
+    .setName("rename")
+    .setDescription("Renombra un pez de tu inventario")
     .addIntegerOption((option) =>
       option
         .setName("numero_pez")
-        .setDescription(
-          "Número del pez en tu inventario a marcar como favorito"
-        )
+        .setDescription("Número del pez en tu inventario a renombrar")
+        .setRequired(true)
+    )
+    .addStringOption((option) =>
+      option
+        .setName("nuevo_nombre")
+        .setDescription("Nuevo nombre del pez")
         .setRequired(true)
     ),
   /**
@@ -24,6 +28,7 @@ module.exports = {
     try {
       const userId = interaction.user.id;
       const numeroPez = interaction.options.getInteger("numero_pez");
+      const nuevoNombre = interaction.options.getString("nuevo_nombre");
 
       // Buscar al usuario en la base de datos
       const usuario = await Usuario.findOne({ idDiscord: userId });
@@ -44,27 +49,19 @@ module.exports = {
         );
       }
 
-      if (usuario.peces[numeroPez - 1].favourite) {
-        return await interaction.reply(
-          "El pez seleccionado ya está marcado como favorito."
-        );
-      }
-
       // Marcar el pez como favorito
       const pezIndex = numeroPez - 1;
-      usuario.peces[pezIndex].favourite = true;
+      usuario.peces[pezIndex].nombre = nuevoNombre;
 
       // Guardar los cambios en la base de datos
       await usuario.save();
 
       await interaction.reply(
-        `El pez número \`${numeroPez}\` ha sido marcado como favorito.`
+        `El pez número \`${numeroPez}\` ha sido renombrado a \`${nuevoNombre}\`.`
       );
     } catch (error) {
-      console.error("Error al marcar el pez como favorito:", error);
-      await interaction.reply(
-        "Hubo un error al intentar marcar el pez como favorito."
-      );
+      console.error("Error al renombrar al pez.", error);
+      await interaction.reply("Hubo un error al intentar renombrar al pez.");
     }
   },
 };

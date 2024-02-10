@@ -6,6 +6,7 @@ const {
 const ExtendedClient = require("../../../class/ExtendedClient");
 const Usuario = require("../../../schemas/Usuario");
 const Pez = require("../../../schemas/Pez");
+const expUntilNextLevel = require("../../../utility/expUntilNextLevel");
 
 module.exports = {
   structure: new SlashCommandBuilder()
@@ -44,7 +45,13 @@ module.exports = {
       // Construir el embed con la información del pez
       const embed = new EmbedBuilder()
         .setTitle(pez.nombre)
-        .setDescription(`Rareza: ${pezInfo.rareza}\nNivel: ${pez.nivel}`)
+        .setDescription(
+          `Rareza: ${pezInfo.rareza}\nNivel: ${pez.nivel} \nExperiencia: ${
+            pez.exp
+          } / ${expUntilNextLevel[pez.nivel]} \nFavorito: ${
+            pez.favourite ? "Sí" : "No"
+          }`
+        )
         .setColor("#FFC0CB")
         .setImage(pezInfo.foto);
 
