@@ -47,6 +47,7 @@ module.exports = {
       // Verificar si el pez ya está seleccionado
       if (usuario.peces[numeroPez - 1].selected) {
         usuario.peces[numeroPez - 1].selected = false;
+        await usuario.save();
         return await interaction.reply("Has deseleccionado el pez.");
       }
 
