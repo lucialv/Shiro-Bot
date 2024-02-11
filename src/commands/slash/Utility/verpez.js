@@ -11,11 +11,11 @@ const expUntilNextLevel = require("../../../utility/expUntilNextLevel");
 module.exports = {
   structure: new SlashCommandBuilder()
     .setName("fishinfo")
-    .setDescription("Muestra información detallada de un pez")
+    .setDescription("Shows information about a fish in your inventory")
     .addIntegerOption((option) =>
       option
         .setName("id")
-        .setDescription("ID del pez a visualizar")
+        .setDescription("ID of the fish in your inventory")
         .setRequired(true)
     ),
   /**
@@ -36,7 +36,7 @@ module.exports = {
         pezIndex < 0 ||
         pezIndex >= usuario.peces.length
       ) {
-        return await interaction.reply("No tienes un pez con esa ID.");
+        return await interaction.reply("You don't have a fish with that ID.");
       }
 
       const pez = usuario.peces[pezIndex];
@@ -46,19 +46,24 @@ module.exports = {
       const embed = new EmbedBuilder()
         .setTitle(pez.nombre)
         .setDescription(
-          `Rareza: ${pezInfo.rareza}\nNivel: ${pez.nivel} \nExperiencia: ${
-            pez.exp
-          } / ${expUntilNextLevel[pez.nivel]} \nFavorito: ${
-            pez.favourite ? "Sí" : "No"
-          }`
+          `Rarity: ${pezInfo.rareza}\nLevel: ${pez.nivel} \nExp: ${pez.exp} / ${
+            expUntilNextLevel[pez.nivel]
+          } \nFavorite: ${pez.favourite ? "Sí" : "No"}`
         )
+        .setTimestamp()
+        .setFooter({
+          text: `${interaction.user.username} ${pezIndex + 1} fish 🎣`,
+          iconURL: interaction.user.displayAvatarURL(),
+        })
         .setColor("#FFC0CB")
         .setImage(pezInfo.foto);
 
       await interaction.reply({ embeds: [embed] });
     } catch (error) {
       console.error("Error al ver el pez:", error);
-      await interaction.reply("Hubo un error al intentar ver el pez.");
+      await interaction.reply(
+        "There was an error trying to see your fish. Pls contact the developer <@300969054649450496> <3"
+      );
     }
   },
 };

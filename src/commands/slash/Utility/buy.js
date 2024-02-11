@@ -10,11 +10,11 @@ const Usuario = require("../../../schemas/Usuario");
 module.exports = {
   structure: new SlashCommandBuilder()
     .setName("buy")
-    .setDescription("Permite al usuario comprar un item de la tienda")
+    .setDescription("Buy an item from the shop")
     .addIntegerOption((option) =>
       option
         .setName("id")
-        .setDescription("ID del item que quieres comprar")
+        .setDescription("ID of the item in the shop")
         .setRequired(true)
     ),
   /**
@@ -29,20 +29,22 @@ module.exports = {
       // Buscar el usuario en la base de datos
       const usuario = await Usuario.findOne({ idDiscord: userId });
       if (!usuario) {
-        return await interaction.reply("No se pudo encontrar al usuario.");
+        return await interaction.reply(
+          "I couldn't find your account. Did you run the /start command?"
+        );
       }
 
       // Consultar el item seleccionado en la tienda
       const items = await Item.find();
       const itemToBuy = items[itemId];
       if (!itemToBuy) {
-        return await interaction.reply("El item seleccionado no existe.");
+        return await interaction.reply("The item you selected doesn't exist.");
       }
 
       // Verificar si el usuario tiene suficiente dinero para comprar el item
       if (usuario.dinero < itemToBuy.precio) {
         return await interaction.reply(
-          "No tienes suficiente dinero para comprar este item."
+          "You don't have enough 🍪 to buy this item."
         );
       }
 
@@ -56,11 +58,13 @@ module.exports = {
       await usuario.save();
 
       await interaction.reply(
-        `¡Has comprado "${itemToBuy.nombre}" por ${itemToBuy.precio} monedas!`
+        `You have successfully bought a ${itemToBuy.nombre} for ${itemToBuy.precio} 🍪`
       );
     } catch (error) {
       console.error("Error al comprar un item:", error);
-      await interaction.reply("Hubo un error al intentar comprar el item.");
+      await interaction.reply(
+        "An error occurred while buying the item. Pls contact the developer <@300969054649450496> <3"
+      );
     }
   },
 };

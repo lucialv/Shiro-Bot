@@ -9,7 +9,7 @@ const discordVersion = require("discord.js").version;
 module.exports = {
   structure: new SlashCommandBuilder()
     .setName("botinfo")
-    .setDescription("Muestra información sobre el bot"),
+    .setDescription("Shows information about the bot"),
   /**
    * @param {ExtendedClient} client
    * @param {ChatInputCommandInteraction} interaction
@@ -24,11 +24,11 @@ module.exports = {
 
       const embed = new EmbedBuilder()
         .setColor("#0099ff")
-        .setTitle("Información del Bot")
-        .setDescription("Aquí tienes algunos detalles sobre el bot:")
+        .setTitle("Bot information")
+        .setDescription("Here's some information about the bot")
         .addFields(
           {
-            name: "Uso de Memoria",
+            name: "Memmory usage",
             value: `${(usedMemory / 1024 / 1024).toFixed(2)} MB / ${(
               totalMemory /
               1024 /
@@ -37,20 +37,20 @@ module.exports = {
             inline: true,
           },
           {
-            name: "Uso de CPU",
+            name: "CPU usage",
             value: `${cpuUsage.toFixed(2)}%`,
             inline: true,
           },
-          { name: "Versión de Discord.js", value: discordVersion },
-          { name: "Versión de Node.js", value: process.version },
-          { name: "Desarrolladora", value: "<@300969054649450496>" }
+          { name: "Version of Discord.JS", value: discordVersion },
+          { name: "Version of Node.js", value: process.version },
+          { name: "Developer", value: "<@300969054649450496>" }
         );
 
       await interaction.reply({ embeds: [embed] });
     } catch (error) {
       console.error("Error al obtener información del bot:", error);
       await interaction.reply(
-        "Hubo un error al intentar obtener información del bot."
+        "There was an error while trying to view the bot's information. Pls contact the developer <@300969054649450496> <3"
       );
     }
   },

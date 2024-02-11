@@ -1,6 +1,8 @@
 const {
   ChatInputCommandInteraction,
   SlashCommandBuilder,
+  EmbedBuilder,
+  embedLength,
 } = require("discord.js");
 const ExtendedClient = require("../../../class/ExtendedClient");
 const Pez = require("../../../schemas/Pez");
@@ -52,9 +54,14 @@ module.exports = {
       } else if (suerte <= 90) {
         rarezaAleatoria = "Common";
       } else {
-        return await interaction.reply(
-          "No has logrado capturar ningún pez esta vez."
-        );
+        embed = new EmbedBuilder()
+          .setTitle(`Fishing summary 🎣`)
+          .addFields({
+            name: `Fished:`,
+            value: `Nothing 🎣`,
+          })
+          .setColor("#FFC0CB");
+        return await interaction.reply({ embeds: [embed] });
       }
 
       const pezAleatorio = await Pez.aggregate([
@@ -62,9 +69,14 @@ module.exports = {
         { $sample: { size: 1 } },
       ]);
       if (pezAleatorio.length === 0) {
-        return await interaction.reply(
-          "No hay peces disponibles en este momento."
-        );
+        embed = new EmbedBuilder()
+          .setTitle(`Fishing summary 🎣`)
+          .addFields({
+            name: `Fished:`,
+            value: `Nothing 🎣`,
+          })
+          .setColor("#FFC0CB");
+        return await interaction.reply({ embeds: [embed] });
       }
 
       const pez = pezAleatorio[0];
@@ -145,31 +157,100 @@ module.exports = {
             pezSeleccionado.nivel++;
             expGanada = expGanada + pezSeleccionado.exp - expNecesaria;
             pezSeleccionado.exp = expGanada;
+            embed = new EmbedBuilder()
+              .setTitle(`Fishing summary 🎣`)
+              .addFields(
+                {
+                  name: `Fished:`,
+                  value: `${pez.nombre} ${generoEmoji} ${rarezaEmoji} - \`Level ${pezNivel}\``,
+                },
+                {
+                  name: `Cookies:`,
+                  value: `+${dineroGanado} 🍪`,
+                },
+                {
+                  name: `Exp:`,
+                  value: `+\`${expGanada}\` exp - \`New Level ${pezSeleccionado.nivel}\`!`,
+                }
+              )
+              .setTimestamp()
+              .setFooter({
+                text: `${interaction.user.username} fished a fish! 🎣`,
+                iconURL: interaction.user.displayAvatarURL(),
+              })
+              .setColor("#FFC0CB");
             await usuario.save();
-            await interaction.reply(
-              `¡Has pescado un ${pez.nombre} ${generoEmoji} ${rarezaEmoji} - Nivel ${pezNivel} y has ganado ${dineroGanado} monedas! Tu ${pezSeleccionado.nombre} ha subido de nivel y ahora es nivel ${pezSeleccionado.nivel}!`
-            );
+            await interaction.reply({ embeds: [embed] });
           } else {
             pezSeleccionado.exp += expGanada;
+            embed = new EmbedBuilder()
+              .setTitle(`Fishing summary 🎣`)
+              .addFields(
+                {
+                  name: `Fished:`,
+                  value: `${pez.nombre} ${generoEmoji} ${rarezaEmoji} - \`Level ${pezNivel}\``,
+                },
+                {
+                  name: `Cookies:`,
+                  value: `+${dineroGanado} 🍪`,
+                },
+                {
+                  name: `Exp:`,
+                  value: `+\`${expGanada}\` exp`,
+                }
+              )
+              .setTimestamp()
+              .setFooter({
+                text: `${interaction.user.username} fished a fish! 🎣`,
+                iconURL: interaction.user.displayAvatarURL(),
+              })
+              .setColor("#FFC0CB");
             await usuario.save();
-            await interaction.reply(
-              `¡Has pescado un ${pez.nombre} ${generoEmoji} ${rarezaEmoji} - Nivel ${pezNivel} y has ganado ${dineroGanado} monedas! Tu ${pezSeleccionado.nombre} ha ganado ${expGanada} de experiencia y ahora tiene ${pezSeleccionado.exp} de experiencia!`
-            );
+            await interaction.reply({ embeds: [embed] });
           }
         } else {
+          embed = new EmbedBuilder()
+            .setTitle(`Fishing summary 🎣`)
+            .addFields(
+              {
+                name: `Fished:`,
+                value: `${pez.nombre} ${generoEmoji} ${rarezaEmoji} - \`Level ${pezNivel}\``,
+              },
+              {
+                name: `Cookies:`,
+                value: `+${dineroGanado} 🍪`,
+              }
+            )
+            .setTimestamp()
+            .setFooter({
+              text: `${interaction.user.username} fished a fish! 🎣`,
+              iconURL: interaction.user.displayAvatarURL(),
+            })
+            .setColor("#FFC0CB");
           await usuario.save();
-          await interaction.reply(
-            `¡Has pescado un ${pez.nombre} ${generoEmoji} ${rarezaEmoji} - Nivel ${pezNivel} y has ganado ${dineroGanado} monedas!`
-          );
+          await interaction.reply({ embeds: [embed] });
         }
       } else {
-        await interaction.reply(
-          `Se escapó un ${pez.nombre} ${generoEmoji} ${rarezaEmoji} - Nivel ${pezNivel}!`
-        );
+        embed = new EmbedBuilder()
+          .setTitle(`Fishing summary 🎣`)
+          .setDescription("The fish escaped <:jettcry:1206206360782639144>")
+          .addFields({
+            name: `Fish:`,
+            value: `- ${pez.nombre} ${generoEmoji} ${rarezaEmoji} - \`Level ${pezNivel}\``,
+          })
+          .setTimestamp()
+          .setFooter({
+            text: `${interaction.user.username} tried to fish! 🎣`,
+            iconURL: interaction.user.displayAvatarURL(),
+          })
+          .setColor("#FFC0CB");
+        await interaction.reply({ embeds: [embed] });
       }
     } catch (error) {
       console.error("Error al pescar:", error);
-      await interaction.reply("Hubo un error al intentar pescar.");
+      await interaction.reply(
+        "There was an error while trying to fish 🎣 Contact the developer <@300969054649450496>"
+      );
     }
   },
 };

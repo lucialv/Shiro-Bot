@@ -27,7 +27,7 @@ const generoEmojis = {
 module.exports = {
   structure: new SlashCommandBuilder()
     .setName("fishes")
-    .setDescription("Muestra los peces que tienes en tu inventario"),
+    .setDescription("Shows the fishes in your inventory"),
   /**
    * @param {ExtendedClient} client
    * @param {ChatInputCommandInteraction} interaction
@@ -41,18 +41,18 @@ module.exports = {
 
       if (!usuario || usuario.peces.length === 0) {
         return await interaction.reply(
-          "No tienes ningún pez en tu inventario."
+          "You don't have any fish in your inventory."
         );
       }
       const embed = new EmbedBuilder()
-        .setTitle("Inventario")
-        .setDescription("Aquí está tu inventario:")
+        .setTitle("Inventory 🎣")
+        .setDescription("You have the following fishes in your inventory:")
         .setFooter({
           text: `${interaction.user.username} fishes 🐟`,
           iconURL: interaction.user.displayAvatarURL(),
         });
       // Crear un mensaje con la lista de peces del usuario
-      let description = "Tienes los siguientes peces en tu inventario:\n";
+      let description = "You have the following fishes in your inventory:\n";
 
       usuario.peces.forEach((pez, index) => {
         // Obtener el emoji correspondiente a la rareza del pez
@@ -67,14 +67,16 @@ module.exports = {
         // Agregar el pez al mensaje con su rareza, emoji y cadena de texto de favorito
         description += `- ID: \`${index + 1}\` | ${
           pez.nombre
-        } ${generoEmoji} ${rarezaEmoji} Nivel ${pez.nivel} ${favoritoText}\n`;
+        } ${generoEmoji} ${rarezaEmoji} Level ${pez.nivel} ${favoritoText}\n`;
       });
       embed.setDescription(description);
 
       await interaction.reply({ embeds: [embed.toJSON()] });
     } catch (error) {
       console.error("Error al consultar los peces del usuario:", error);
-      await interaction.reply("Hubo un error al intentar consultar tus peces.");
+      await interaction.reply(
+        "There was an error while trying to view your fishes. Pls contact the developer <@300969054649450496> <3"
+      );
     }
   },
 };

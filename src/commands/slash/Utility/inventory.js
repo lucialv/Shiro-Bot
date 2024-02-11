@@ -10,7 +10,7 @@ const Item = require("../../../schemas/Item");
 module.exports = {
   structure: new SlashCommandBuilder()
     .setName("inventory")
-    .setDescription("Muestra el inventario del usuario"),
+    .setDescription("Shows the items in your inventory"),
   /**
    * @param {ExtendedClient} client
    * @param {ChatInputCommandInteraction} interaction
@@ -22,7 +22,9 @@ module.exports = {
       // Buscar el usuario en la base de datos
       const usuario = await Usuario.findOne({ idDiscord: userId });
       if (!usuario) {
-        return await interaction.reply("No se pudo encontrar al usuario.");
+        return await interaction.reply(
+          "I couldn't find your account. Did you run the /start command?"
+        );
       }
 
       // Verificar si el usuario tiene algún item en su inventario
