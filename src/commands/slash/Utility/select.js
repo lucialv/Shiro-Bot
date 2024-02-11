@@ -46,7 +46,8 @@ module.exports = {
 
       // Verificar si el pez ya está seleccionado
       if (usuario.peces[numeroPez - 1].selected) {
-        return await interaction.reply("El pez ya está seleccionado.");
+        usuario.peces[numeroPez - 1].selected = false;
+        return await interaction.reply("Has deseleccionado el pez.");
       }
 
       // Marcar el pez como favorito
