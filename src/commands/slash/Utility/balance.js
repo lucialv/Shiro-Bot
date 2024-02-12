@@ -22,7 +22,7 @@ module.exports = {
       const usuario = await Usuario.findOne({ idDiscord: userId });
       if (!usuario) {
         return await interaction.reply(
-          "No se encontró información sobre tu cuenta."
+          "I couldn't find your account. Did you run the /start command?"
         );
       }
 

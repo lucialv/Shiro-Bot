@@ -39,6 +39,12 @@ module.exports = {
     try {
       const userId = interaction.user.id;
 
+      let usuario = await Usuario.findOne({ idDiscord: userId });
+      if (!usuario) {
+        return await interaction.reply(
+          "I couldn't find your account. Did you run the /start command?"
+        );
+      }
       const suerte = Math.floor(Math.random() * 100) + 1;
       let rarezaAleatoria;
       if (suerte <= 1) {
@@ -120,19 +126,6 @@ module.exports = {
       const generoEmoji = generoEmojis[gender] || "";
 
       if (capturado) {
-        // Obtener el usuario actual o crear uno nuevo si no existe
-        let usuario = await Usuario.findOne({ idDiscord: userId });
-        if (!usuario) {
-          usuario = await Usuario.create({
-            idDiscord: userId,
-            nombre: interaction.user.username,
-            dinero: 0,
-            inventario: [],
-            donator: false,
-            capturados: 0, // Añadimos el contador de peces capturados
-          });
-        }
-
         // Agregar los atributos del pez capturado al usuario
         usuario.peces.push({
           pezId: pez._id,

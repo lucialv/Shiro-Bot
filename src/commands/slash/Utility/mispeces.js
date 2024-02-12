@@ -47,6 +47,7 @@ module.exports = {
       const embed = new EmbedBuilder()
         .setTitle("Inventory 🎣")
         .setDescription("You have the following fishes in your inventory:")
+        .setTimestamp()
         .setFooter({
           text: `${interaction.user.username} fishes 🐟`,
           iconURL: interaction.user.displayAvatarURL(),
