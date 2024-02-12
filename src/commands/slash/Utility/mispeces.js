@@ -1,6 +1,8 @@
 const {
   ChatInputCommandInteraction,
   SlashCommandBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
   EmbedBuilder,
 } = require("discord.js");
 const Usuario = require("../../../schemas/Usuario");
@@ -24,6 +26,9 @@ const generoEmojis = {
   Girl: "<:female:1205911278791430204>",
 };
 
+// Constantes para el control de paginación
+const FISHES_PER_PAGE = 10;
+
 module.exports = {
   structure: new SlashCommandBuilder()
     .setName("fishes")
@@ -44,6 +49,18 @@ module.exports = {
           "You don't have any fish in your inventory."
         );
       }
+
+      const peces = usuario.peces;
+      const totalPages = Math.ceil(peces.length / FISHES_PER_PAGE);
+
+      // Obtener el número de página actual
+      let currentPage = 1;
+
+      // Iterar sobre los items de la página actual y agregarlos como campos
+      const startIndex = (currentPage - 1) * FISHES_PER_PAGE;
+      const endIndex = startIndex + FISHES_PER_PAGE;
+      const currentItems = peces.slice(startIndex, endIndex);
+
       const embed = new EmbedBuilder()
         .setTitle("Inventory 🎣")
         .setDescription("You have the following fishes in your inventory:")
@@ -55,7 +72,7 @@ module.exports = {
       // Crear un mensaje con la lista de peces del usuario
       let description = "You have the following fishes in your inventory:\n";
 
-      usuario.peces.forEach((pez, index) => {
+      currentItems.forEach((pez, index) => {
         // Obtener el emoji correspondiente a la rareza del pez
         const rarezaEmoji = rarezaEmojis[pez.rareza] || "";
         const generoEmoji = generoEmojis[pez.genero] || "";
@@ -72,7 +89,99 @@ module.exports = {
       });
       embed.setDescription(description);
 
-      await interaction.reply({ embeds: [embed.toJSON()] });
+      if (peces.length <= FISHES_PER_PAGE) {
+        return await interaction.reply({
+          embeds: [embed.toJSON()],
+        });
+      }
+
+      const previousButton = new ButtonBuilder()
+        .setCustomId("previous")
+        .setLabel("Previous")
+        .setStyle(1)
+        .setDisabled(true); // Deshabilitar el botón de "Previous" en la primera página
+
+      const nextButton = new ButtonBuilder()
+        .setCustomId("next")
+        .setLabel("Next")
+        .setStyle(1);
+
+      // Crear una fila de acciones para los botones
+      const actionRow = new ActionRowBuilder()
+        .addComponents(previousButton)
+        .addComponents(nextButton);
+
+      // Diferir la respuesta antes de enviar el mensaje embed con los botones de paginación
+      await interaction.deferReply();
+
+      // Enviar el mensaje embed con los botones de paginación
+      await interaction.editReply({
+        embeds: [embed.toJSON()],
+        components: [actionRow],
+      });
+
+      // Manejar las interacciones de botones
+      const filter = (interaction) => {
+        return interaction.user.id === interaction.user.id;
+      };
+      const collector = interaction.channel.createMessageComponentCollector({
+        filter,
+        time: 60000, // Tiempo de espera para la interacción
+      });
+
+      collector.on("collect", async (buttonInteraction) => {
+        if (buttonInteraction.customId === "next") {
+          // Avanzar a la siguiente página
+          currentPage++;
+          if (currentPage >= totalPages) {
+            nextButton.setDisabled(true);
+            previousButton.setDisabled(false);
+          }
+        } else if (buttonInteraction.customId === "previous") {
+          // Retroceder a la página anterior
+          nextButton.setDisabled(false);
+          if (currentPage > 1) {
+            currentPage--;
+            if (currentPage === 1) {
+              previousButton.setDisabled(true);
+            }
+          }
+        }
+
+        // Actualizar el mensaje con la nueva página
+        const startIndex = (currentPage - 1) * FISHES_PER_PAGE;
+        const endIndex = startIndex + FISHES_PER_PAGE;
+        const currentItems = peces.slice(startIndex, endIndex);
+        const multiplicadorDePagina = (currentPage - 1) * FISHES_PER_PAGE;
+        let description2 = "You have the following fishes in your inventory:\n";
+        description = "";
+        currentItems.forEach((pez, index) => {
+          // Obtener el emoji correspondiente a la rareza del pez
+          const rarezaEmoji = rarezaEmojis[pez.rareza] || "";
+          const generoEmoji = generoEmojis[pez.genero] || "";
+
+          // Agregar la cadena de texto si el pez está marcado como favorito
+          const favoritoText = pez.favourite
+            ? " <:heartyy:1205896133277253694>"
+            : "";
+
+          // Agregar el pez al mensaje con su rareza, emoji y emoji de fav
+          description2 += `- ID: \`${index + 1 + multiplicadorDePagina}\` | ${
+            pez.nombre
+          } ${generoEmoji} ${rarezaEmoji} Level ${pez.nivel} ${favoritoText}\n`;
+        });
+        embed.setDescription(description2);
+
+        await buttonInteraction.update({
+          embeds: [embed.toJSON()],
+          components: [actionRow],
+        });
+      });
+
+      collector.on("end", async () => {
+        // Limpiar los botones cuando la colección termina (después de 60 segundos en este caso)
+        await interaction.editReply({ components: [] });
+      });
     } catch (error) {
       console.error("Error al consultar los peces del usuario:", error);
       await interaction.reply(

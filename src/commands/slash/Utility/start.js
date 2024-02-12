@@ -26,7 +26,7 @@ module.exports = {
         usuario = await Usuario.create({
           idDiscord: userId,
           nombre: interaction.user.username,
-          dinero: 100,
+          dinero: 250,
           inventario: [],
           donator: false,
           capturados: 0,
@@ -36,7 +36,7 @@ module.exports = {
       const embed = new EmbedBuilder()
         .setTitle("Welcome to the fishing world!")
         .setDescription(
-          `I've created your account. You have \`100\` 🍪 to start with! Why you don't try to buy a rod? \`/buy 1\``
+          `I've created your account. You have \`250\` 🍪 to start with! Why you don't try to buy a rod? \`/buy 1\``
         )
         .setColor("#FFC0CB")
         .setFooter({
