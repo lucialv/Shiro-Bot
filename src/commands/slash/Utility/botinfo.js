@@ -23,6 +23,8 @@ module.exports = {
       const cpuUsage = process.cpuUsage().user / 1000000; // En milisegundos
       const networkInterfaces = os.networkInterfaces();
       const ipAddress = networkInterfaces["eth0"][0].address;
+      //get public ip Adrres
+      const publicIp = await publicIp.v4();
 
       const embed = new EmbedBuilder()
         .setColor("#0099ff")
@@ -45,7 +47,7 @@ module.exports = {
           },
           {
             name: "Ip of the server",
-            value: ipAddress,
+            value: publicIp,
           },
           { name: "Version of Discord.JS", value: discordVersion },
           { name: "Version of Node.js", value: process.version },
