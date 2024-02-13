@@ -5,7 +5,6 @@ const {
 } = require("discord.js");
 const os = require("os");
 const discordVersion = require("discord.js").version;
-const os = require("os");
 
 module.exports = {
   structure: new SlashCommandBuilder()
