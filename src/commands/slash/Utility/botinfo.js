@@ -21,8 +21,6 @@ module.exports = {
       const freeMemory = os.freemem();
       const usedMemory = totalMemory - freeMemory;
       const cpuUsage = process.cpuUsage().user / 1000000; // En milisegundos
-      const networkInterfaces = os.networkInterfaces();
-      console.log(networkInterfaces);
 
       const embed = new EmbedBuilder()
         .setColor("#0099ff")
