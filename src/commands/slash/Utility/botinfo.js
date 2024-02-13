@@ -5,6 +5,7 @@ const {
 } = require("discord.js");
 const os = require("os");
 const discordVersion = require("discord.js").version;
+const os = require("os");
 
 module.exports = {
   structure: new SlashCommandBuilder()
@@ -21,6 +22,8 @@ module.exports = {
       const freeMemory = os.freemem();
       const usedMemory = totalMemory - freeMemory;
       const cpuUsage = process.cpuUsage().user / 1000000; // En milisegundos
+      const networkInterfaces = os.networkInterfaces();
+      const ipAddress = networkInterfaces["eth0"][0].address;
 
       const embed = new EmbedBuilder()
         .setColor("#0099ff")
@@ -40,6 +43,10 @@ module.exports = {
             name: "CPU usage",
             value: `${cpuUsage.toFixed(2)}%`,
             inline: true,
+          },
+          {
+            name: "Ip of the server",
+            value: ipAddress,
           },
           { name: "Version of Discord.JS", value: discordVersion },
           { name: "Version of Node.js", value: process.version },
