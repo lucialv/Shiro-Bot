@@ -22,9 +22,7 @@ module.exports = {
       const usedMemory = totalMemory - freeMemory;
       const cpuUsage = process.cpuUsage().user / 1000000; // En milisegundos
       const networkInterfaces = os.networkInterfaces();
-      const ipAddress = networkInterfaces["eth0"][0].address;
-      //get public ip Adrres
-      const publicIp = await publicIp.v4();
+      console.log(networkInterfaces);
 
       const embed = new EmbedBuilder()
         .setColor("#0099ff")
@@ -44,10 +42,6 @@ module.exports = {
             name: "CPU usage",
             value: `${cpuUsage.toFixed(2)}%`,
             inline: true,
-          },
-          {
-            name: "Ip of the server",
-            value: publicIp,
           },
           { name: "Version of Discord.JS", value: discordVersion },
           { name: "Version of Node.js", value: process.version },
