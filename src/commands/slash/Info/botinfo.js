@@ -3,8 +3,8 @@ const {
   SlashCommandBuilder,
   EmbedBuilder,
 } = require("discord.js");
-const os = require("os");
 const discordVersion = require("discord.js").version;
+const Usuario = require("../../../schemas/Usuario");
 
 module.exports = {
   structure: new SlashCommandBuilder()
@@ -16,33 +16,36 @@ module.exports = {
    */
   run: async (client, interaction) => {
     try {
-      const memoryUsage = process.memoryUsage();
-      const totalMemory = os.totalmem();
-      const freeMemory = os.freemem();
-      const usedMemory = totalMemory - freeMemory;
-      const cpuUsage = process.cpuUsage().user / 1000000; // En milisegundos
+      //get the number of guilds the bot is in
+      const guilds = client.guilds.cache.size;
+      //get the number of players in DB
+      const players = await Usuario.countDocuments();
 
+      console.log(guilds, players);
       const embed = new EmbedBuilder()
         .setColor("#0099ff")
         .setTitle("Bot information")
-        .setDescription("Here's some information about the bot")
+        .setDescription(
+          "Here's some information about the bot <:Blobhaj:1207351064777465938>"
+        )
+        .setTimestamp()
+        .setFooter({
+          text: `${client.user.username} info`,
+          iconURL: client.user.displayAvatarURL(),
+        })
         .addFields(
           {
-            name: "Memmory usage",
-            value: `${(usedMemory / 1024 / 1024).toFixed(2)} MB / ${(
-              totalMemory /
-              1024 /
-              1024
-            ).toFixed(2)} MB`,
+            name: "Guilds",
+            value: `${guilds}`,
             inline: true,
           },
           {
-            name: "CPU usage",
-            value: `${cpuUsage.toFixed(2)}%`,
+            name: "Players",
+            value: `${players}`,
             inline: true,
           },
-          { name: "Version of Discord.JS", value: discordVersion },
-          { name: "Version of Node.js", value: process.version },
+          { name: "Discord.js Version", value: discordVersion },
+          { name: "Node.js Version", value: process.version },
           { name: "Developer", value: "<@300969054649450496>" }
         );
 

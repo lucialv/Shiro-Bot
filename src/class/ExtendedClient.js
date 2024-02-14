@@ -32,9 +32,9 @@ module.exports = class extends Client {
       presence: {
         activities: [
           {
-            name: "UwU",
-            type: 4,
-            state: "I love Mía and Lucía",
+            name: "/help",
+            type: 3,
+            // state: "Watching /help",
           },
         ],
       },
