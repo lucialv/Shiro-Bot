@@ -5,6 +5,7 @@ const {
 } = require("discord.js");
 const discordVersion = require("discord.js").version;
 const Usuario = require("../../../schemas/Usuario");
+const GuildSchema = require("../../../schemas/GuildSchema");
 
 module.exports = {
   structure: new SlashCommandBuilder()
@@ -18,15 +19,20 @@ module.exports = {
     try {
       //get the number of guilds the bot is in
       const guilds = client.guilds.cache.size;
+      const guildId = interaction.guild.id;
+      const guild = await GuildSchema.findOne({ guild: guildId });
+      const language = guild.language;
       //get the number of players in DB
       const players = await Usuario.countDocuments();
 
       console.log(guilds, players);
       const embed = new EmbedBuilder()
         .setColor("#0099ff")
-        .setTitle("Bot information")
+        .setTitle(language === "en" ? "Bot Information" : "Información del bot")
         .setDescription(
-          "Here's some information about the bot <:Blobhaj:1207351064777465938>"
+          language === "en"
+            ? "Here you can see some information about the bot <:Blobhaj:1207351064777465938>"
+            : "Aquí puedes ver información sobre el bot <:Blobhaj:1207351064777465938>"
         )
         .setTimestamp()
         .setFooter({
@@ -35,18 +41,30 @@ module.exports = {
         })
         .addFields(
           {
-            name: "Guilds",
+            name: language === "en" ? "Guilds" : "Servidores",
             value: `${guilds}`,
             inline: true,
           },
           {
-            name: "Players",
+            name: language === "en" ? "Players" : "Jugadores",
             value: `${players}`,
             inline: true,
           },
-          { name: "Discord.js Version", value: discordVersion },
-          { name: "Node.js Version", value: process.version },
-          { name: "Developer", value: "<@300969054649450496>" }
+          {
+            name:
+              language === "en"
+                ? "Discord.js Version"
+                : "Versión de Discord.js",
+            value: discordVersion,
+          },
+          {
+            name: language === "en" ? "Node.js Version" : "Versión de Node.js",
+            value: process.version,
+          },
+          {
+            name: language === "en" ? "Developer" : "Programadora",
+            value: "<@300969054649450496>",
+          }
         );
 
       await interaction.reply({ embeds: [embed] });

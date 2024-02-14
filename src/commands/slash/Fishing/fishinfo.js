@@ -7,6 +7,7 @@ const ExtendedClient = require("../../../class/ExtendedClient");
 const Usuario = require("../../../schemas/Usuario");
 const Pez = require("../../../schemas/Pez");
 const expUntilNextLevel = require("../../../utility/expUntilNextLevel");
+const GuildSchema = require("../../../schemas/GuildSchema");
 
 module.exports = {
   structure: new SlashCommandBuilder()
@@ -25,6 +26,10 @@ module.exports = {
   run: async (client, interaction) => {
     try {
       const userId = interaction.user.id;
+      const guildId = interaction.guild.id;
+      const guild = await GuildSchema.findOne({ guild: guildId });
+      const language = guild.language;
+
       const pezIndex = interaction.options.getInteger("id") - 1;
 
       // Obtener el usuario y sus peces de la base de datos
@@ -36,7 +41,11 @@ module.exports = {
         pezIndex < 0 ||
         pezIndex >= usuario.peces.length
       ) {
-        return await interaction.reply("You don't have a fish with that ID.");
+        return await interaction.reply(
+          language === "en"
+            ? "You don't have any fish in your inventory."
+            : "No tienes ningún pez en tu inventario."
+        );
       }
 
       const pez = usuario.peces[pezIndex];
@@ -46,13 +55,19 @@ module.exports = {
       const embed = new EmbedBuilder()
         .setTitle(pez.nombre)
         .setDescription(
-          `Rarity: ${pezInfo.rareza}\nLevel: ${pez.nivel} \nExp: ${pez.exp} / ${
+          `${language === "en" ? "Rarity" : "Rareza"}: ${pezInfo.rareza}\n${
+            language === "en" ? "Level" : "Nivel"
+          }: ${pez.nivel} \nExp: ${pez.exp} / ${
             expUntilNextLevel[pez.nivel]
-          } \nFavorite: ${pez.favourite ? "Sí" : "No"}`
+          } \n${language === "en" ? "Favorite" : "Favorito"}: ${
+            pez.favourite ? `${language === "en" ? "Yes" : "Sí"}` : "No"
+          }`
         )
         .setTimestamp()
         .setFooter({
-          text: `${interaction.user.username} ${pezIndex + 1} fish 🎣`,
+          text: `${interaction.user.username} ${
+            language === "en" ? "fish" : "pez"
+          } 🎣`,
           iconURL: interaction.user.displayAvatarURL(),
         })
         .setColor("#FFC0CB")

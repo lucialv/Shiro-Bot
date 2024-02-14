@@ -1,6 +1,7 @@
 const {
   ChatInputCommandInteraction,
   SlashCommandBuilder,
+  PermissionFlagsBits,
 } = require("discord.js");
 const ExtendedClient = require("../../../class/ExtendedClient");
 const Item = require("../../../schemas/Item");
@@ -52,6 +53,7 @@ module.exports = {
         .setDescription("Precio del nuevo item")
         .setRequired(true)
     )
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .addStringOption((option) =>
       option
         .setName("emoji")

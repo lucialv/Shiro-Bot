@@ -1,6 +1,7 @@
 const {
   ChatInputCommandInteraction,
   SlashCommandBuilder,
+  PermissionFlagsBits,
 } = require("discord.js");
 const ExtendedClient = require("../../../class/ExtendedClient");
 const Pez = require("../../../schemas/Pez");
@@ -29,6 +30,7 @@ module.exports = {
           { name: "Legendary", value: "Legendary" }
         )
     )
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .addStringOption((option) =>
       option
         .setName("foto")
@@ -38,6 +40,7 @@ module.exports = {
   options: {
     developers: true,
   },
+
   /**
    * @param {ExtendedClient} client
    * @param {ChatInputCommandInteraction} interaction

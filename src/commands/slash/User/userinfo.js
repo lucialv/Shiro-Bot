@@ -5,8 +5,9 @@ const {
   AttachmentBuilder,
 } = require("discord.js");
 const ExtendedClient = require("../../../class/ExtendedClient");
-const { time } = require("../../../functions");
 const { profileImage } = require("discord-arts");
+const Usuario = require("../../../schemas/Usuario");
+const GuildSchema = require("../../../schemas/GuildSchema");
 
 module.exports = {
   structure: new SlashCommandBuilder()
@@ -20,121 +21,115 @@ module.exports = {
    * @param {ChatInputCommandInteraction} interaction
    */
   run: async (client, interaction) => {
-    await interaction.deferReply();
     const member = interaction.options.getMember("user") || interaction.member;
-    function addSuffix(number) {
-      if (number % 100 >= 11 && number % 100 <= 13) return number + "th";
-      switch (number % 10) {
-        case 1:
-          return number + "st";
-        case 2:
-          return number + "nd";
-        case 3:
-          return number + "rd";
-      }
-      return number + "th";
-    }
+    const guildId = interaction.guild.id;
+    const guild = await GuildSchema.findOne({ guild: guildId });
+    const language = guild.language;
 
-    function addBadges(badgeNames) {
-      if (!badgeNames.length) return ["<a:6764_no:1097556585192112149> "];
-      const badgeMap = {
-        ActiveDeveloper: "<:activedeveloper:1097524725464432750> ",
-        BugHunterLevel1: "<:discordbughunter1:1097524730816372766>",
-        BugHunterLevel2: "<:discordbughunter2:1097524732691230822>",
-        PremiumEarlySupporter: "<:discordearlysupporter:1097524733853040710>",
-        Partner: "<:discordpartner:1097524737833447476>",
-        Staff: "<:discordstaff:1097524969589719070>",
-        HypeSquadOnlineHouse1: "<:hypesquadbravery:1097524744720482395>", // bravery
-        HypeSquadOnlineHouse2: "<:hypesquadbrilliance:1097524746490499132>", // brilliance
-        HypeSquadOnlineHouse3: "<:hypesquadbalance:1097524742686244975>", // balance
-        Hypesquad: "<:hypesquadevents:1097524971565228034>",
-        CertifiedModerator: "<:olddiscordmod:1097524751594954792>",
-        VerifiedDeveloper: "<:discordbotdev:1097524729201573958>",
-        64: "<:discordnitro:1097524736101204108>",
-        4194304: "<:discordboost7:1097524727532236820>",
-        256: "<:discordnitro:1097524736101204108>",
-      };
-      return badgeNames.map((badgeName) => badgeMap[badgeName] || "❔");
-    }
-
-    if (member.user.bot)
-      return interaction.editReply({
+    if (member.user.bot) {
+      const errorMessage =
+        language === "en"
+          ? "You can't get information about a bot. <a:6764_no:1097556585192112149>"
+          : "No puedes obtener información sobre un bot. <a:6764_no:1097556585192112149>";
+      return interaction.reply({
         embeds: [
-          new EmbedBuilder()
-            .setDescription(
-              "In this momment you can't do this command! <a:6764_no:1097556585192112149> "
-            )
-            .setColor("#e4f1ff"),
+          new EmbedBuilder().setDescription(errorMessage).setColor("#e4f1ff"),
         ],
         ephemeral: true,
       });
+    }
+
+    await interaction.deferReply();
+    const userId = member.id;
+
+    // Buscar al usuario en la base de datos
+    const usuario = await Usuario.findOne({ idDiscord: userId });
+    if (!usuario) {
+      const errorMessage =
+        language === "en"
+          ? `I couldn't find the account of <@${userId}>. Did they run the /start command?`
+          : `No pude encontrar la cuenta de <@${userId}>. ¿Ejecutaron el comando /start?`;
+      return await interaction.reply(errorMessage);
+    }
+
+    let badges = "";
+
+    if (usuario.badges.length !== 0) {
+      usuario.badges.forEach((badge) => {
+        if (badge === "developer") {
+          badges +=
+            "<:dev1:1207365411893551104><:dev2:1207365413462212628><:dev3:1207365415127490570> ";
+        }
+        if (badge === "beta") {
+          badges +=
+            "<:beta1:1207368081979088948><:beta2:1207368088895627364><:beta3:1207368089990336553> ";
+        }
+      });
+    } else {
+      badges = "<a:6764_no:1097556585192112149>";
+    }
+
+    // Eliminar el último espacio en blanco, si existe
+    badges = badges.trim();
+
+    const fecha = new Date(usuario.startedOn);
+    const fechaUnix = fecha.getTime() / 1000;
+    //quitar los decimales de fechaUnix
+    const joinTime = Math.floor(fechaUnix);
 
     try {
-      const fetchedMembers = await interaction.guild.members.fetch();
       const profileBuffer = await profileImage(member.id);
       const imageAttachment = new AttachmentBuilder(profileBuffer, {
         name: `profile.png`,
       });
 
-      const joinPosition =
-        Array.from(
-          fetchedMembers
-            .sort((a, b) => a.joinedTimestamp - b.joinedTimestamp)
-            .keys()
-        ).indexOf(member.id) + 1;
-
-      const topRoles = member.roles.cache
-        .sort((a, b) => b.position - a.position)
-        .map((role) => role)
-        .slice(0, 3);
-
-      const userBadges = member.user.flags.toArray();
-
-      const joinTime = parseInt(member.joinedTimestamp / 1000);
-      const createdTime = parseInt(member.user.createdTimestamp / 1000);
-
-      const Booster = member.premiumSince
-        ? "<:discordboost7:1097524727532236820>"
-        : "<a:6764_no:1097556585192112149> ";
-      const Banner = (await member.user.fetch()).bannerURL()
-        ? `[Link](${(await member.user.fetch()).bannerURL()})`
-        : "<a:6764_no:1097556585192112149> ";
+      const Donator = usuario.donator
+        ? "<a:check:1206885683474599936>"
+        : "<a:6764_no:1097556585192112149>";
 
       const Embed = new EmbedBuilder()
         .setAuthor({
-          name: `${member.user.username} | General Info`,
+          name: `${member.user.username} | ${
+            language === "en" ? "User Info" : "Información de Usuario"
+          }`,
           iconURL: member.displayAvatarURL(),
         })
         .setColor("#e4f1ff")
         .setDescription(
-          `In <t:${joinTime}:D>, ${
-            member.user.username
-          } joined the **${addSuffix(joinPosition)}** in this server.`
+          language === "en"
+            ? `In <t:${joinTime}:D>, <@${userId}> started fishing!`
+            : `¡En <t:${joinTime}:D>, <@${userId}> empezó a pescar!`
         )
         .setImage("attachment://profile.png")
         .addFields([
           {
-            name: "Badges",
-            value: `${addBadges(userBadges).join("")}`,
-            inline: true,
-          },
-          { name: "Booster", value: `${Booster}`, inline: true },
-          {
-            name: "Top Roles",
-            value: `${topRoles.join("").replace(`<@${interaction.guildId}>`)}`,
-            inline: false,
-          },
-          { name: "Created", value: `<t:${createdTime}:R>`, inline: true },
-          { name: "Joined", value: `<t:${joinTime}:R>`, inline: true },
-          { name: "ID", value: `${member.id}`, inline: false },
-          {
-            name: "Avatar",
-            value: `[Link](${member.displayAvatarURL()})`,
+            name: language === "en" ? "Badges" : "Insignias",
+            value: `${badges}`,
             inline: true,
           },
           {
-            name: "Banner",
-            value: `${Banner}`,
+            name: language === "en" ? "Donator" : "Donador",
+            value: `${Donator}`,
+            inline: true,
+          },
+          {
+            name: language === "en" ? "Items" : "Objetos",
+            value: `${usuario.inventario.length}`,
+            inline: true,
+          },
+          {
+            name: language === "en" ? "Cookies" : "Galletas",
+            value: `${usuario.dinero} 🍪`,
+            inline: true,
+          },
+          {
+            name: language === "en" ? "Fishes Fished" : "Peces Pescados",
+            value: `${usuario.capturados}`,
+            inline: true,
+          },
+          {
+            name: language === "en" ? "Total Fishes" : "Total de Peces",
+            value: `${usuario.peces.length}`,
             inline: true,
           },
         ]);
@@ -145,7 +140,10 @@ module.exports = {
       });
     } catch (error) {
       interaction.editReply({
-        content: "An Error Has Ocurred: Contact with <@300969054649450496>",
+        content:
+          language === "en"
+            ? "An Error Has Ocurred: Contact with <@300969054649450496>"
+            : "Ha ocurrido un error: Contacta con <@300969054649450496>",
       });
       throw error;
     }
