@@ -5,6 +5,7 @@ const {
 } = require("discord.js");
 const ExtendedClient = require("../../../class/ExtendedClient");
 const Usuario = require("../../../schemas/Usuario");
+const GuildSchema = require("../../../schemas/GuildSchema");
 
 module.exports = {
   structure: new SlashCommandBuilder()
@@ -24,13 +25,22 @@ module.exports = {
   run: async (client, interaction) => {
     try {
       const userId = interaction.user.id;
+      const guildId = interaction.guild.id;
+      const guild = await GuildSchema.findOne({ guild: guildId });
+      const language = guild.language;
 
       // Buscar al usuario en la base de datos
       const usuario = await Usuario.findOne({ idDiscord: userId });
       if (!usuario) {
-        return await interaction.reply(
-          "I couldn't find your account. Did you run the /start command?"
-        );
+        if (language === "en") {
+          return await interaction.reply(
+            "I couldn't find your account. Did you run the /start command?"
+          );
+        } else {
+          return await interaction.reply(
+            "No he podido encontrar tu cuenta. ¿Has hecho el comando /start?"
+          );
+        }
       }
 
       const dineroApostado = interaction.options.getInteger("amount");
@@ -39,13 +49,25 @@ module.exports = {
       const caraGanadora = Math.floor(Math.random() * 2) + 1 === 1;
 
       if (dineroApostado > usuario.dinero) {
-        return await interaction.reply(
-          "You don't have enough money to bet that amount!"
-        );
+        if (language === "en") {
+          return await interaction.reply(
+            "You don't have enough money to bet that amount!"
+          );
+        } else {
+          return await interaction.reply(
+            "¡No tienes suficiente dinero para apostar esa cantidad!"
+          );
+        }
       }
 
       if (dineroApostado <= 0) {
-        return await interaction.reply("You can't bet 0 or negative money!");
+        if (language === "en") {
+          return await interaction.reply("You can't bet 0 or negative money!");
+        } else {
+          return await interaction.reply(
+            "¡No puedes apostar 0 o dinero negativo!"
+          );
+        }
       }
 
       if (caraGanadora) {
@@ -54,7 +76,15 @@ module.exports = {
         const embed = new EmbedBuilder()
           .setTitle("Coinflip")
           .setDescription(
-            `You won the coinflip <a:check:1206885683474599936> \n You won \`${dineroApostado}\` 🍪 \n Now you have 
+            `${
+              language === "en"
+                ? "You won the coinflip"
+                : "¡Has ganado el coinflip!"
+            } <a:check:1206885683474599936> \n ${
+              language === "en" ? "You won" : "Has ganado"
+            } \`${dineroApostado}\` 🍪 \n ${
+              language === "en" ? "Now you have" : "Ahora tienes"
+            }
             \`${usuario.dinero}\` 🍪`
           )
           .setColor("#FFC0CB")
@@ -69,12 +99,22 @@ module.exports = {
         const embed = new EmbedBuilder()
           .setTitle("Coinflip")
           .setDescription(
-            `You didn't win <a:failed_cross:1206884378005995521> \n You lost \`${dineroApostado}\` 🍪 \n Now you have 
+            `${
+              language === "en"
+                ? "You didn't win the coinflip"
+                : "¡Has perdido el coinflip!"
+            } <a:failed_cross:1206884378005995521> \n ${
+              language === "en" ? "You lost" : "Has perdido"
+            } \`${dineroApostado}\` 🍪 \n ${
+              language === "en" ? "Now you have" : "Ahora tienes"
+            }
             \`${usuario.dinero}\` 🍪`
           )
           .setColor("#FFC0CB")
           .setFooter({
-            text: `${interaction.user.username} lost a coinflip 🍪`,
+            text: `${interaction.user.username} ${
+              language === "en" ? "lost a coinflip" : "perdió el coinflip"
+            } 🍪`,
             iconURL: interaction.user.displayAvatarURL(),
           });
         await interaction.reply({ embeds: [embed.toJSON()] });

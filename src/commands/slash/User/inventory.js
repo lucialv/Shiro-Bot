@@ -6,11 +6,12 @@ const {
 const ExtendedClient = require("../../../class/ExtendedClient");
 const Usuario = require("../../../schemas/Usuario");
 const Item = require("../../../schemas/Item");
+const GuildSchema = require("../../../schemas/GuildSchema");
 
 module.exports = {
   structure: new SlashCommandBuilder()
     .setName("inventory")
-    .setDescription("Shows the items in your inventory"),
+    .setDescription("Shows your inventory"),
   /**
    * @param {ExtendedClient} client
    * @param {ChatInputCommandInteraction} interaction
@@ -18,23 +19,32 @@ module.exports = {
   run: async (client, interaction) => {
     try {
       const userId = interaction.user.id;
+      const guildId = interaction.guild.id;
 
-      // Buscar el usuario en la base de datos
+      // Buscar al usuario en la base de datos
       const usuario = await Usuario.findOne({ idDiscord: userId });
       if (!usuario) {
-        return await interaction.reply(
-          "I couldn't find your account. Did you run the /start command?"
-        );
+        const guild = await GuildSchema.findOne({ guild: guildId });
+        const language = guild.language;
+        const errorMessage =
+          language === "en"
+            ? "I couldn't find your account. Did you run the /start command?"
+            : "No he podido encontrar tu cuenta. ¿Has hecho el comando /start?";
+        return await interaction.reply(errorMessage);
       }
 
-      // Verificar si el usuario tiene algún item en su inventario
+      // Verificar si el usuario tiene algún objeto en su inventario
       if (!usuario.inventario || usuario.inventario.length === 0) {
-        return await interaction.reply(
-          "You don't have any items in your inventory."
-        );
+        const guild = await GuildSchema.findOne({ guild: guildId });
+        const language = guild.language;
+        const errorMessage =
+          language === "en"
+            ? "You don't have any items in your inventory."
+            : "No tienes ningún objeto en tu inventario.";
+        return await interaction.reply(errorMessage);
       }
 
-      // Contar la cantidad de veces que aparece cada item en el inventario
+      // Contar la cantidad de veces que aparece cada objeto en el inventario
       const itemCounts = {};
       usuario.inventario.forEach((item) => {
         if (itemCounts[item.idUso]) {
@@ -45,16 +55,22 @@ module.exports = {
       });
 
       // Crear un mensaje embed con el inventario del usuario
+      const guild = await GuildSchema.findOne({ guild: guildId });
+      const language = guild.language;
       const embed = new EmbedBuilder()
-        .setTitle("Inventory")
-        .setDescription("Here are the items in your inventory")
+        .setTitle(language === "en" ? "Inventory" : "Inventario")
         .setTimestamp()
         .setFooter({
-          text: `${interaction.user.username} inventory`,
+          text: `${interaction.user.username} ${
+            language === "en" ? "inventory" : "inventario"
+          } 🎒`,
           iconURL: interaction.user.displayAvatarURL(),
         });
 
-      let description = "";
+      let description =
+        language === "en"
+          ? "Here are the items in your inventory:\n\n"
+          : "Aquí están los objetos en tu inventario:\n\n";
 
       for (const itemId in itemCounts) {
         if (itemCounts.hasOwnProperty(itemId)) {
@@ -62,7 +78,9 @@ module.exports = {
           const item = await Item.findOne({ idUso: itemId });
 
           if (item) {
-            const formattedItem = `${item.nombre} ${item.emoji} (${item.idUso}) - ${itemCount}`;
+            const formattedItem = `${
+              language === "en" ? item.nombre : item.nombreES
+            } ${item.emoji} (${item.idUso}) - ${itemCount}`;
             description += `${formattedItem}\n`;
           }
         }

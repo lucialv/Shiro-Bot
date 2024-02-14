@@ -3,6 +3,7 @@ const {
   SlashCommandBuilder,
 } = require("discord.js");
 const Usuario = require("../../../schemas/Usuario");
+const GuildSchema = require("../../../schemas/GuildSchema");
 
 module.exports = {
   structure: new SlashCommandBuilder()
@@ -21,6 +22,10 @@ module.exports = {
   run: async (client, interaction) => {
     try {
       const userId = interaction.user.id;
+      const guildId = interaction.guild.id;
+      const guild = await GuildSchema.findOne({ guild: guildId });
+      const language = guild.language;
+
       const numeroPez = interaction.options.getInteger("id");
 
       // Buscar al usuario en la base de datos
@@ -28,21 +33,27 @@ module.exports = {
 
       if (!usuario) {
         return await interaction.reply(
-          "I couldn't find your account. Did you run the /start command?"
+          language === "en"
+            ? "I couldn't find your account. Did you run the /start command?"
+            : "No he podido encontrar tu cuenta. ¿Has hecho el comando /start?"
         );
       }
 
       // Verificar si el usuario tiene peces en su inventario
       if (!usuario.peces || usuario.peces.length === 0) {
         return await interaction.reply(
-          "You don't have any fish in your inventory."
+          language === "en"
+            ? "You don't have any fish in your inventory."
+            : "No tienes ningún pez en tu inventario."
         );
       }
 
       // Verificar si el número del pez es válido
       if (numeroPez <= 0 || numeroPez > usuario.peces.length) {
         return await interaction.reply(
-          "The fish ID you entered is invalid. Please enter a valid ID."
+          language === "en"
+            ? "The fish number is invalid."
+            : "El número del pez es inválido."
         );
       }
       const pezIndex = numeroPez - 1;
@@ -52,7 +63,13 @@ module.exports = {
         usuario.peces[pezIndex].favourite = false;
         await usuario.save();
         return await interaction.reply(
-          `The fish ${usuario.peces[pezIndex].nombre} has been unmarked as favorite.`
+          `${language === "en" ? "The fish" : "El pez"} ${
+            usuario.peces[pezIndex].nombre
+          } ${
+            language === "en"
+              ? "has been unmarked as favorite"
+              : "ha sido desmarcado como favorito"
+          }.`
         );
       }
 
@@ -63,7 +80,13 @@ module.exports = {
       await usuario.save();
 
       await interaction.reply(
-        `The fish \`${numeroPez}\` has been marked as favorite.`
+        `${language === "en" ? "The fish" : "El pez"} ${
+          usuario.peces[pezIndex].nombre
+        } ${
+          language === "en"
+            ? "has been marked as favorite"
+            : "ha sido marcado como favorito"
+        }.`
       );
     } catch (error) {
       console.error("Error al marcar el pez como favorito:", error);

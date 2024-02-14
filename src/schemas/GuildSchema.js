@@ -10,6 +10,11 @@ module.exports = model(
     prefix: {
       type: String,
     },
+    language: {
+      type: String,
+      enum: ["en", "es"],
+      default: "en",
+    },
     canal_pesca_1: {
       type: String,
       required: true,

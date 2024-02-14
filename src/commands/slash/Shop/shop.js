@@ -7,6 +7,7 @@ const {
 } = require("discord.js");
 const ExtendedClient = require("../../../class/ExtendedClient");
 const Item = require("../../../schemas/Item");
+const GuildSchema = require("../../../schemas/GuildSchema");
 
 // Constantes para el control de paginación
 const ITEMS_PER_PAGE = 3;
@@ -23,11 +24,18 @@ module.exports = {
     try {
       // Consultar todos los items de la tienda desde la base de datos
       const items = await Item.find();
+      const guildId = interaction.guild.id;
+      const guild = await GuildSchema.findOne({ guild: guildId });
+      const language = guild.language;
 
       // Crear un mensaje embed con la lista de items
       const embed = new EmbedBuilder()
-        .setTitle("Shop 🍪")
-        .setDescription("Here are all the items available in the shop");
+        .setTitle(language === "en" ? "Shop 🍪" : "Tienda 🍪")
+        .setDescription(
+          language === "en"
+            ? "Here are all the items available in the shop"
+            : "Aquí están todos los items disponibles en la tienda"
+        );
 
       // Obtener el número total de páginas
       const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
@@ -45,8 +53,14 @@ module.exports = {
 
       currentItems.forEach((item, index) => {
         fields.push({
-          name: `${item.nombre} ${item.emoji} - \`${startIndex + index + 1}\``,
-          value: `Type: ${item.tipo}\nDescription: ${item.descripcion}\nDurability: ${item.durabilidad}\nPrice: ${item.precio} 🍪`,
+          name: `${language === "en" ? item.nombre : item.nombreES} ${
+            item.emoji
+          } - \`${startIndex + index + 1}\``,
+          value: `${language === "en" ? "Description" : "Descripcion"}: ${
+            language === item.descripcion ? "Type" : item.descripcionES
+          }\n${language === "en" ? "Durability" : "Durabilidad"}: ${
+            item.durabilidad
+          }\n${language === "en" ? "Price" : "Precio"}: ${item.precio} 🍪`,
         });
       });
 
@@ -56,13 +70,13 @@ module.exports = {
       // Crear botones para la paginación
       const previousButton = new ButtonBuilder()
         .setCustomId("previous")
-        .setLabel("Previous")
+        .setLabel(`${language === "en" ? "Previous" : "Anterior"}`)
         .setStyle(1)
         .setDisabled(true); // Deshabilitar el botón de "Previous" en la primera página
 
       const nextButton = new ButtonBuilder()
         .setCustomId("next")
-        .setLabel("Next")
+        .setLabel(`${language === "en" ? "Next" : "Siguiente"}`)
         .setStyle(1);
 
       // Crear una fila de acciones para los botones
@@ -117,10 +131,14 @@ module.exports = {
         const updatedFields = [];
         currentItems.forEach((item, index) => {
           updatedFields.push({
-            name: `${item.nombre} ${item.emoji} - \`${
-              startIndex + index + 1
-            }\``,
-            value: `Type: ${item.tipo}\nDescription: ${item.descripcion}\nDurability: ${item.durabilidad}\nPrice: ${item.precio} 🍪`,
+            name: `${language === "en" ? item.nombre : item.nombreES} ${
+              item.emoji
+            } - \`${startIndex + index + 1}\``,
+            value: `${language === "en" ? "Description" : "Descripcion"}: ${
+              language === item.descripcion ? "Type" : item.descripcionES
+            }\n${language === "en" ? "Durability" : "Durabilidad"}: ${
+              item.durabilidad
+            }\n${language === "en" ? "Price" : "Precio"}: ${item.precio} 🍪`,
           });
         });
 

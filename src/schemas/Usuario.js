@@ -23,6 +23,8 @@ const UsuarioSchema = new Schema({
   inventario: { type: Array, required: false },
   donator: { type: Boolean, required: false },
   capturados: { type: Number, default: 0 },
+  startedOn: { type: Date, default: Date.now },
+  badges: { type: Array, default: [] },
 });
 
 module.exports = model("Usuario", UsuarioSchema);

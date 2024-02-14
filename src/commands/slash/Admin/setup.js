@@ -2,6 +2,7 @@ const {
   ChatInputCommandInteraction,
   SlashCommandBuilder,
   ChannelType,
+  PermissionFlagsBits,
 } = require("discord.js");
 const GuildSchema = require("../../../schemas/GuildSchema");
 
@@ -29,7 +30,8 @@ module.exports = {
         .setDescription("Third fishing channel")
         .addChannelTypes(ChannelType.GuildText)
         .setRequired(true)
-    ),
+    )
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
   /**
    * @param {ExtendedClient} client
    * @param {ChatInputCommandInteraction} interaction
@@ -37,6 +39,9 @@ module.exports = {
   run: async (client, interaction) => {
     try {
       const guildId = interaction.guild.id;
+      const guild = await GuildSchema.findOne({ guild: guildId });
+      const language = guild.language;
+
       const channel1Id = interaction.options.getChannel("channel1").id;
       const channel2Id = interaction.options.getChannel("channel2").id;
       const channel3Id = interaction.options.getChannel("channel3").id;
@@ -53,7 +58,9 @@ module.exports = {
       );
 
       await interaction.reply(
-        "Fishing channels have been successfully configured!"
+        language === "en"
+          ? "Fishing channels configured successfully."
+          : "Canales de pesca configurados correctamente."
       );
     } catch (error) {
       console.error("Error configuring fishing channels:", error);

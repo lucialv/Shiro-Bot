@@ -6,6 +6,7 @@ const {
   EmbedBuilder,
 } = require("discord.js");
 const Usuario = require("../../../schemas/Usuario");
+const GuildSchema = require("../../../schemas/GuildSchema");
 
 // Definir emojis para cada rareza
 const rarezaEmojis = {
@@ -40,13 +41,17 @@ module.exports = {
   run: async (client, interaction) => {
     try {
       const userId = interaction.user.id;
-
+      const guildId = interaction.guild.id;
+      const guild = await GuildSchema.findOne({ guild: guildId });
+      const language = guild.language;
       // Buscar al usuario en la base de datos
       const usuario = await Usuario.findOne({ idDiscord: userId });
 
       if (!usuario || usuario.peces.length === 0) {
         return await interaction.reply(
-          "You don't have any fish in your inventory."
+          language === "en"
+            ? "You don't have any fish in your inventory."
+            : "No tienes ningún pez en tu inventario."
         );
       }
 
@@ -62,15 +67,27 @@ module.exports = {
       const currentItems = peces.slice(startIndex, endIndex);
 
       const embed = new EmbedBuilder()
-        .setTitle("Inventory 🎣")
-        .setDescription("You have the following fishes in your inventory:")
+        .setTitle(`${language === "en" ? "Inventory" : "Inventario"} 🎣`)
+        .setDescription(
+          `${
+            language === "en"
+              ? "You have the following fishes in your inventory"
+              : "Tienes los siguientes peces en tu inventario"
+          }:`
+        )
         .setTimestamp()
         .setFooter({
-          text: `${interaction.user.username} fishes 🐟`,
+          text: `${interaction.user.username} ${
+            language === "en" ? "fishes" : "peces"
+          } 🐟`,
           iconURL: interaction.user.displayAvatarURL(),
         });
       // Crear un mensaje con la lista de peces del usuario
-      let description = "You have the following fishes in your inventory:\n";
+      let description = `${
+        language === "en"
+          ? "You have the following fishes in your inventory"
+          : "Tienes los siguientes peces en tu inventario"
+      }:\n`;
 
       currentItems.forEach((pez, index) => {
         // Obtener el emoji correspondiente a la rareza del pez
@@ -85,7 +102,9 @@ module.exports = {
         // Agregar el pez al mensaje con su rareza, emoji y cadena de texto de favorito
         description += `- ID: \`${index + 1}\` | ${
           pez.nombre
-        } ${generoEmoji} ${rarezaEmoji} Level ${pez.nivel} ${favoritoText}\n`;
+        } ${generoEmoji} ${rarezaEmoji} ${
+          language === "en" ? "Level" : "Nivel"
+        } ${pez.nivel} ${favoritoText}\n`;
       });
       embed.setDescription(description);
 
@@ -97,13 +116,13 @@ module.exports = {
 
       const previousButton = new ButtonBuilder()
         .setCustomId("previous")
-        .setLabel("Previous")
+        .setLabel(`${language === "en" ? "Previous" : "Anterior"}`)
         .setStyle(1)
         .setDisabled(true); // Deshabilitar el botón de "Previous" en la primera página
 
       const nextButton = new ButtonBuilder()
         .setCustomId("next")
-        .setLabel("Next")
+        .setLabel(`${language === "en" ? "Next" : "Siguiente"}`)
         .setStyle(1);
 
       // Crear una fila de acciones para los botones
@@ -153,7 +172,11 @@ module.exports = {
         const endIndex = startIndex + FISHES_PER_PAGE;
         const currentItems = peces.slice(startIndex, endIndex);
         const multiplicadorDePagina = (currentPage - 1) * FISHES_PER_PAGE;
-        let description2 = "You have the following fishes in your inventory:\n";
+        let description2 = `${
+          language === "en"
+            ? "You have the following fishes in your inventory"
+            : "Tienes los siguientes peces en tu inventario"
+        }:\n`;
         description = "";
         currentItems.forEach((pez, index) => {
           // Obtener el emoji correspondiente a la rareza del pez
@@ -168,7 +191,9 @@ module.exports = {
           // Agregar el pez al mensaje con su rareza, emoji y emoji de fav
           description2 += `- ID: \`${index + 1 + multiplicadorDePagina}\` | ${
             pez.nombre
-          } ${generoEmoji} ${rarezaEmoji} Level ${pez.nivel} ${favoritoText}\n`;
+          } ${generoEmoji} ${rarezaEmoji} ${
+            language === "en" ? "Level" : "Nivel"
+          } ${pez.nivel} ${favoritoText}\n`;
         });
         embed.setDescription(description2);
 

@@ -5,6 +5,7 @@ const {
 } = require("discord.js");
 const ExtendedClient = require("../../../class/ExtendedClient");
 const Usuario = require("../../../schemas/Usuario");
+const GuildSchema = require("../../../schemas/GuildSchema");
 
 module.exports = {
   structure: new SlashCommandBuilder()
@@ -17,11 +18,18 @@ module.exports = {
   run: async (client, interaction) => {
     try {
       const userId = interaction.user.id;
+      const guildId = interaction.guild.id;
+      const guild = await GuildSchema.findOne({ guild: guildId });
+      const language = guild.language;
 
       // Buscar al usuario en la base de datos
       let usuario = await Usuario.findOne({ idDiscord: userId });
       if (usuario) {
-        return await interaction.reply("You already have an account!");
+        if (language === "en") {
+          return await interaction.reply("You already have an account!");
+        } else {
+          return await interaction.reply("¡Ya tienes una cuenta!");
+        }
       } else {
         usuario = await Usuario.create({
           idDiscord: userId,
@@ -30,17 +38,27 @@ module.exports = {
           inventario: [],
           donator: false,
           capturados: 0,
+          peces: [],
+          badges: [],
         });
       }
 
       const embed = new EmbedBuilder()
-        .setTitle("Welcome to the fishing world!")
+        .setTitle(
+          language === "en"
+            ? "Welcome to the fishing world!"
+            : "Bienvenid@ al mundo de la pesca!"
+        )
         .setDescription(
-          `I've created your account. You have \`250\` 🍪 to start with! Why you don't try to buy a rod? \`/buy 1\``
+          language === "en"
+            ? "I've created your account. You have `250` 🍪 to start with! Why you don't try to buy a rod? `/buy 1`"
+            : "He creado tu cuenta. ¡Tienes `250` 🍪 para empezar! ¿Por qué no intentas comprar una caña? `/buy 1`"
         )
         .setColor("#FFC0CB")
         .setFooter({
-          text: `${interaction.user.username} welcome 🎣`,
+          text: `${interaction.user.username} ${
+            language === "en" ? "welcome" : "bienvenid@"
+          }  🎣`,
           iconURL: interaction.user.displayAvatarURL(),
         });
       await interaction.reply({ embeds: [embed.toJSON()] });

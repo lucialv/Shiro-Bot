@@ -3,6 +3,7 @@ const {
   SlashCommandBuilder,
 } = require("discord.js");
 const Usuario = require("../../../schemas/Usuario");
+const GuildSchema = require("../../../schemas/GuildSchema");
 
 module.exports = {
   structure: new SlashCommandBuilder()
@@ -27,6 +28,10 @@ module.exports = {
   run: async (client, interaction) => {
     try {
       const userId = interaction.user.id;
+      const guildId = interaction.guild.id;
+      const guild = await GuildSchema.findOne({ guild: guildId });
+      const language = guild.language;
+
       const numeroPez = interaction.options.getInteger("id");
       const nuevoNombre = interaction.options.getString("new_name");
 
@@ -35,21 +40,27 @@ module.exports = {
 
       if (!usuario) {
         return await interaction.reply(
-          "I couldn't find your account. Did you run the /start command?"
+          language === "en"
+            ? "I couldn't find your account. Did you run the /start command?"
+            : "No he podido encontrar tu cuenta. ¿Has hecho el comando /start?"
         );
       }
 
       // Verificar si el usuario tiene peces en su inventario
       if (!usuario.peces || usuario.peces.length === 0) {
         return await interaction.reply(
-          "You don't have any fish in your inventory."
+          language === "en"
+            ? "You don't have any fish in your inventory."
+            : "No tienes ningún pez en tu inventario."
         );
       }
 
       // Verificar si el número del pez es válido
       if (numeroPez <= 0 || numeroPez > usuario.peces.length) {
         return await interaction.reply(
-          "The fish ID you entered is invalid. Please enter a valid ID."
+          language === "en"
+            ? "The fish ID you entered is invalid. Please enter a valid ID."
+            : "El ID del pez que ingresaste es inválido. Por favor ingresa un ID válido."
         );
       }
 
@@ -61,7 +72,9 @@ module.exports = {
       await usuario.save();
 
       await interaction.reply(
-        `The fish \`${numeroPez}\` has been renamed to \`${nuevoNombre}\`!`
+        `${language === "en" ? "The fish" : "El pez"} \`${numeroPez}\` ${
+          language === "en" ? "has been renamed to" : "ha sido renombrado a"
+        } \`${nuevoNombre}\`!`
       );
     } catch (error) {
       console.error("Error al renombrar al pez.", error);
