@@ -98,13 +98,16 @@ module.exports = {
         const favoritoText = pez.favourite
           ? " <:heartyy:1205896133277253694>"
           : "";
+        const selectedText = pez.selected
+          ? "<:selected:1207617274584891392>"
+          : "";
 
         // Agregar el pez al mensaje con su rareza, emoji y cadena de texto de favorito
         description += `- ID: \`${index + 1}\` | ${
           pez.nombre
         } ${generoEmoji} ${rarezaEmoji} ${
           language === "en" ? "Level" : "Nivel"
-        } ${pez.nivel} ${favoritoText}\n`;
+        } ${pez.nivel} ${favoritoText} ${selectedText}\n`;
       });
       embed.setDescription(description);
 
