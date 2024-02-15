@@ -85,6 +85,12 @@ module.exports = {
         );
       }
 
+      // Verificar si el usuario ya tiene un pez seleccionado
+      const pezSeleccionado = usuario.peces.find((pez) => pez.selected);
+      if (pezSeleccionado) {
+        pezSeleccionado.selected = false;
+      }
+
       // Marcar el pez como favorito
       const pezIndex = numeroPez - 1;
       usuario.peces[pezIndex].selected = true;
