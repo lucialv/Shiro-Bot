@@ -70,13 +70,12 @@ module.exports = {
         );
       }
 
-      //Si lo usa restarle 1 de durabilidad, si llega a 0 eliminarlo del inventario
-      itemToUse.durabilidad = itemToUse.durabilidad - 1;
-      if (itemToUse.durabilidad === 0) {
-        usuario.inventario.splice(itemIndex, 1);
-      }
-
       if (itemIdUso === 1000) {
+        //Si lo usa restarle 1 de durabilidad, si llega a 0 eliminarlo del inventario
+        itemToUse.durabilidad = itemToUse.durabilidad - 1;
+        if (itemToUse.durabilidad === 0) {
+          usuario.inventario.splice(itemIndex, 1);
+        }
         usuario.dinero += 100;
         // Guardar los cambios en el usuario
         await usuario.save();
