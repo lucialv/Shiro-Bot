@@ -22,8 +22,8 @@ module.exports = {
    */
   run: async (client, interaction) => {
     try {
-      // Consultar todos los items de la tienda desde la base de datos
-      const items = await Item.find();
+      // Consultar todos los items comprables en la tienda
+      const items = await Item.find({ comprable: true });
       const guildId = interaction.guild.id;
       const guild = await GuildSchema.findOne({ guild: guildId });
       const language = guild.language;
@@ -57,7 +57,7 @@ module.exports = {
             item.emoji
           } - \`${startIndex + index + 1}\``,
           value: `${language === "en" ? "Description" : "Descripcion"}: ${
-            language === item.descripcion ? "Type" : item.descripcionES
+            language === "en" ? item.descripcion : item.descripcionES
           }\n${language === "en" ? "Durability" : "Durabilidad"}: ${
             item.durabilidad
           }\n${language === "en" ? "Price" : "Precio"}: ${item.precio} 🍪`,
@@ -135,7 +135,7 @@ module.exports = {
               item.emoji
             } - \`${startIndex + index + 1}\``,
             value: `${language === "en" ? "Description" : "Descripcion"}: ${
-              language === item.descripcion ? "Type" : item.descripcionES
+              language === "en" ? item.descripcion : item.descripcionES
             }\n${language === "en" ? "Durability" : "Durabilidad"}: ${
               item.durabilidad
             }\n${language === "en" ? "Price" : "Precio"}: ${item.precio} 🍪`,

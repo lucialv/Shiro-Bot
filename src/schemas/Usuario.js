@@ -25,6 +25,8 @@ const UsuarioSchema = new Schema({
   capturados: { type: Number, default: 0 },
   startedOn: { type: Date, default: Date.now },
   badges: { type: Array, default: [] },
+  lastDaily: { type: Date, required: false },
+  dailyStreak: { type: Number, default: 0 },
 });
 
 module.exports = model("Usuario", UsuarioSchema);

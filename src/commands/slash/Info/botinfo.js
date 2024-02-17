@@ -25,7 +25,6 @@ module.exports = {
       //get the number of players in DB
       const players = await Usuario.countDocuments();
 
-      console.log(guilds, players);
       const embed = new EmbedBuilder()
         .setColor("#0099ff")
         .setTitle(language === "en" ? "Bot Information" : "Información del bot")

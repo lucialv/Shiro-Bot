@@ -13,7 +13,13 @@ module.exports = {
     .addStringOption((option) =>
       option
         .setName("nombre")
-        .setDescription("Nombre del nuevo item")
+        .setDescription("Nombre del nuevo item en ingles")
+        .setRequired(true)
+    )
+    .addStringOption((option) =>
+      option
+        .setName("nombrees")
+        .setDescription("Nombre del nuevo item en español")
         .setRequired(true)
     )
     .addIntegerOption((option) =>
@@ -25,7 +31,13 @@ module.exports = {
     .addStringOption((option) =>
       option
         .setName("descripcion")
-        .setDescription("Descripción del nuevo item")
+        .setDescription("Descripción del nuevo item en ingles")
+        .setRequired(true)
+    )
+    .addStringOption((option) =>
+      option
+        .setName("descripciones")
+        .setDescription("Descripción del nuevo item en español")
         .setRequired(true)
     )
     .addIntegerOption((option) =>
@@ -53,6 +65,18 @@ module.exports = {
         .setDescription("Precio del nuevo item")
         .setRequired(true)
     )
+    .addBooleanOption((option) =>
+      option
+        .setName("comprable")
+        .setDescription("El item es comprable")
+        .setRequired(true)
+    )
+    .addBooleanOption((option) =>
+      option
+        .setName("usable")
+        .setDescription("El item es usable")
+        .setRequired(true)
+    )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .addStringOption((option) =>
       option
@@ -74,7 +98,11 @@ module.exports = {
       const nombre = options.getString("nombre");
       const idUso = options.getInteger("iduso");
       const descripcion = options.getString("descripcion");
+      const nombreES = options.getString("nombrees");
+      const descripcionES = options.getString("descripciones");
       const durabilidad = options.getInteger("durabilidad");
+      const comprable = options.getBoolean("comprable");
+      const usable = options.getBoolean("usable");
       const tipo = options.getString("tipo");
       const precio = options.getInteger("precio");
       const emoji = options.getString("emoji");
@@ -82,8 +110,12 @@ module.exports = {
       // Crear un nuevo item en la base de datos
       const newItem = await Item.create({
         nombre,
+        nombreES,
         idUso,
+        comprable,
+        usable,
         descripcion,
+        descripcionES,
         durabilidad,
         tipo,
         precio,
