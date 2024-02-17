@@ -47,14 +47,6 @@ module.exports = {
         const segundos =
           seconds - days * 24 * 60 * 60 - horas * 60 * 60 - minutos * 60;
 
-        console.log("Días:", days);
-        console.log("Horas:", horas);
-        console.log("Minutos:", minutos);
-        console.log("Segundos:", segundos);
-
-        console.log("Diferencia en horas:", hours);
-        console.log("Diferencia en minutos:", minutes);
-
         if (hours === 23 && days === -1) {
           return await interaction.reply(
             language === "en"
