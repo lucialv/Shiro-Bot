@@ -10,12 +10,15 @@ const GuildSchema = require("../../../schemas/GuildSchema");
 
 module.exports = {
   structure: new SlashCommandBuilder()
-    .setName("buy")
-    .setDescription("Buy an item from the shop")
+    .setName("pay")
+    .setDescription("Pay another user")
+    .addUserOption((option) =>
+      option.setName("user").setDescription("User to pay").setRequired(true)
+    )
     .addIntegerOption((option) =>
       option
-        .setName("id")
-        .setDescription("ID of the item in the shop")
+        .setName("cookies")
+        .setDescription("Amount of cookies to pay")
         .setRequired(true)
     ),
   /**
@@ -34,10 +37,15 @@ module.exports = {
       }
       const language = guild.language;
 
-      const itemId = interaction.options.getInteger("id") - 1; // Restamos 1 porque la lista de items empieza desde 1 en la interfaz de usuario
+      const payUser = interaction.options.getMember("user");
+      const cookies = interaction.options.getInteger("cookies"); // Restamos 1 porque la lista de items empieza desde 1 en la interfaz de usuario
 
       // Buscar el usuario en la base de datos
       const usuario = await Usuario.findOne({ idDiscord: userId });
+      const usuarioDestino = await Usuario.findOne({
+        idDiscord: payUser.id,
+      });
+
       if (!usuario) {
         return await interaction.reply(
           language === "en"
@@ -46,48 +54,40 @@ module.exports = {
         );
       }
 
-      // Consultar el item seleccionado en la tienda
-      const items = await Item.find();
-      const itemToBuy = items[itemId];
-      if (!itemToBuy) {
+      if (!usuarioDestino) {
         return await interaction.reply(
           language === "en"
-            ? "The item you selected doesn't exist."
-            : "El item que has seleccionado no existe."
+            ? "I couldn't find the account of the user you want to pay. Did they run the /start command?"
+            : "No he podido encontrar la cuenta del usuario al que quieres pagar. ¿Ha hecho el comando /start?"
         );
       }
 
       // Verificar si el usuario tiene suficiente dinero para comprar el item
-      if (usuario.dinero < itemToBuy.precio) {
+      if (usuario.dinero < cookies) {
         return await interaction.reply(
           language === "en"
-            ? "You don't have enough cookies to buy this item."
-            : "No tienes suficientes cookies para comprar este item."
+            ? "You don't have enough cookies to pay this user."
+            : "No tienes suficientes cookies para pagar a este usuario."
         );
       }
 
       // Restar el precio del item del dinero del usuario
-      usuario.dinero -= itemToBuy.precio;
+      usuario.dinero -= cookies;
+      usuarioDestino.dinero += cookies;
 
-      // Agregar el item al inventario del usuario
-      usuario.inventario.push(itemToBuy);
-
-      // Guardar los cambios en el usuario
+      // Guardar los cambios en los usuarios
       await usuario.save();
+      await usuarioDestino.save();
 
       await interaction.reply(
         `${
-          language === "en"
-            ? "You have successfully bought a"
-            : "Acabas de comprar"
-        } \`${language === "en" ? itemToBuy.nombre : itemToBuy.nombreES}\` ${
-          language === "en" ? "for" : "por"
-        } \`${itemToBuy.precio}\` 🍪`
+          language === "en" ? "You have successfully send" : "Acabas de enviar"
+        } \`${cookies}\` 🍪 ${language === "en" ? "to" : "a"} <@${payUser.id}> `
       );
     } catch (error) {
       console.error("Error al comprar un item:", error);
       await interaction.reply(
-        "An error occurred while buying the item. Pls contact the developer <@300969054649450496> <3"
+        "An error occurred while paying the user. Pls contact the developer <@300969054649450496> <3"
       );
     }
   },

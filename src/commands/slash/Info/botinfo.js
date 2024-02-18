@@ -6,6 +6,7 @@ const {
 const discordVersion = require("discord.js").version;
 const Usuario = require("../../../schemas/Usuario");
 const GuildSchema = require("../../../schemas/GuildSchema");
+const colorsEmbed = require("../../../utility/colorsEmbed");
 
 module.exports = {
   structure: new SlashCommandBuilder()
@@ -21,12 +22,17 @@ module.exports = {
       const guilds = client.guilds.cache.size;
       const guildId = interaction.guild.id;
       const guild = await GuildSchema.findOne({ guild: guildId });
+      if (!guild) {
+        return await interaction.reply(
+          "Tell your server administrator to run the /setup command to set up the bot"
+        );
+      }
       const language = guild.language;
       //get the number of players in DB
       const players = await Usuario.countDocuments();
 
       const embed = new EmbedBuilder()
-        .setColor("#0099ff")
+        .setColor(colorsEmbed["blue"])
         .setTitle(language === "en" ? "Bot Information" : "Información del bot")
         .setDescription(
           language === "en"

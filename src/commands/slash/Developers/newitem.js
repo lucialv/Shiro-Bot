@@ -65,10 +65,22 @@ module.exports = {
         .setDescription("Precio del nuevo item")
         .setRequired(true)
     )
+    .addIntegerOption((option) =>
+      option
+        .setName("precioventa")
+        .setDescription("Precio del nuevo item al vender")
+        .setRequired(true)
+    )
     .addBooleanOption((option) =>
       option
         .setName("comprable")
         .setDescription("El item es comprable")
+        .setRequired(true)
+    )
+    .addBooleanOption((option) =>
+      option
+        .setName("vendible")
+        .setDescription("El item es vendible")
         .setRequired(true)
     )
     .addBooleanOption((option) =>
@@ -102,6 +114,8 @@ module.exports = {
       const descripcionES = options.getString("descripciones");
       const durabilidad = options.getInteger("durabilidad");
       const comprable = options.getBoolean("comprable");
+      const vendible = options.getBoolean("vendible");
+      const precioVenta = options.getInteger("precioventa");
       const usable = options.getBoolean("usable");
       const tipo = options.getString("tipo");
       const precio = options.getInteger("precio");
@@ -114,6 +128,8 @@ module.exports = {
         idUso,
         comprable,
         usable,
+        vendible,
+        precioVenta,
         descripcion,
         descripcionES,
         durabilidad,

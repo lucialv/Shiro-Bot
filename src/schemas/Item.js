@@ -6,6 +6,8 @@ const ItemSchema = new Schema({
   idUso: { type: Number, required: true },
   comprable: { type: Boolean, required: true },
   usable: { type: Boolean, required: true },
+  vendible: { type: Boolean, required: true },
+  precioVenta: { type: Number, required: true },
   descripcion: { type: String, required: true },
   descripcionES: { type: String, required: true },
   durabilidad: { type: Number, required: true },

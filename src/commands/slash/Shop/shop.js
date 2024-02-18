@@ -8,6 +8,7 @@ const {
 const ExtendedClient = require("../../../class/ExtendedClient");
 const Item = require("../../../schemas/Item");
 const GuildSchema = require("../../../schemas/GuildSchema");
+const colorsEmbed = require("../../../utility/colorsEmbed");
 
 // Constantes para el control de paginación
 const ITEMS_PER_PAGE = 3;
@@ -26,11 +27,17 @@ module.exports = {
       const items = await Item.find({ comprable: true });
       const guildId = interaction.guild.id;
       const guild = await GuildSchema.findOne({ guild: guildId });
+      if (!guild) {
+        return await interaction.reply(
+          "Tell your server administrator to run the /setup command to set up the bot"
+        );
+      }
       const language = guild.language;
 
       // Crear un mensaje embed con la lista de items
       const embed = new EmbedBuilder()
         .setTitle(language === "en" ? "Shop 🍪" : "Tienda 🍪")
+        .setColor(colorsEmbed["blue"])
         .setDescription(
           language === "en"
             ? "Here are all the items available in the shop"

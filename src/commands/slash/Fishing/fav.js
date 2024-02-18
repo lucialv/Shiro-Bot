@@ -24,6 +24,11 @@ module.exports = {
       const userId = interaction.user.id;
       const guildId = interaction.guild.id;
       const guild = await GuildSchema.findOne({ guild: guildId });
+      if (!guild) {
+        return await interaction.reply(
+          "Tell your server administrator to run the /setup command to set up the bot"
+        );
+      }
       const language = guild.language;
 
       const numeroPez = interaction.options.getInteger("id");

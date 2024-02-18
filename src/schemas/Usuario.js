@@ -22,6 +22,8 @@ const UsuarioSchema = new Schema({
   dinero: { type: Number, default: 0 },
   inventario: { type: Array, required: false },
   donator: { type: Boolean, required: false },
+  donatorPerks: { type: Boolean, default: false },
+  logros: { type: Array, default: [] },
   capturados: { type: Number, default: 0 },
   startedOn: { type: Date, default: Date.now },
   badges: { type: Array, default: [] },

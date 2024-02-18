@@ -7,6 +7,7 @@ const ExtendedClient = require("../../../class/ExtendedClient");
 const Item = require("../../../schemas/Item");
 const Usuario = require("../../../schemas/Usuario");
 const GuildSchema = require("../../../schemas/GuildSchema");
+const colorsEmbed = require("../../../utility/colorsEmbed");
 
 module.exports = {
   structure: new SlashCommandBuilder()
@@ -21,6 +22,11 @@ module.exports = {
       const userId = interaction.user.id;
       const guildId = interaction.guild.id;
       const guild = await GuildSchema.findOne({ guild: guildId });
+      if (!guild) {
+        return await interaction.reply(
+          "Tell your server administrator to run the /setup command to set up the bot"
+        );
+      }
       const language = guild.language;
 
       // Buscar el usuario en la base de datos
@@ -66,7 +72,6 @@ module.exports = {
         } else if (days <= -3) {
           usuario.dailyStreak = 0;
         }
-        console.log(usuario.dailyStreak);
       }
       // Consultar el item de recompensa diaria idUso 1000
       const chest = await Item.find({ idUso: 1000 });
@@ -87,7 +92,7 @@ module.exports = {
         .addFields(
           {
             name: language === "en" ? "You've won:" : "Has ganado:",
-            value: `- <:plusone:1208549042775396435> ${
+            value: `- <:masuno:1208716787148001320> ${
               language === "en" ? chest[0].nombre : chest[0].nombreES
             } ${chest[0].emoji}`,
           },
@@ -96,7 +101,7 @@ module.exports = {
             value:
               usuario.dailyStreak === "- 0"
                 ? "- 0 <:jettcry:1206206360782639144>"
-                : `- ${usuario.dailyStreak} <a:streakFire:1208546793382481952>`,
+                : `- ${usuario.dailyStreak} ‎ <:streak:1208714834749825105>`,
           }
         )
 
@@ -107,7 +112,7 @@ module.exports = {
           }`,
           iconURL: interaction.user.displayAvatarURL(),
         })
-        .setColor("#FFC0CB");
+        .setColor(colorsEmbed["blue"]);
       await interaction.reply({ embeds: [embed] });
     } catch (error) {
       console.error("Error al comprar un item:", error);

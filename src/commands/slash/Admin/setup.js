@@ -31,6 +31,16 @@ module.exports = {
         .addChannelTypes(ChannelType.GuildText)
         .setRequired(true)
     )
+    .addStringOption((option) =>
+      option
+        .setName("language")
+        .setDescription("Language of the bot")
+        .addChoices(
+          { name: "English", value: "en" },
+          { name: "Spanish", value: "es" }
+        )
+        .setRequired(true)
+    )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
   /**
    * @param {ExtendedClient} client
@@ -40,11 +50,11 @@ module.exports = {
     try {
       const guildId = interaction.guild.id;
       const guild = await GuildSchema.findOne({ guild: guildId });
-      const language = guild.language;
 
       const channel1Id = interaction.options.getChannel("channel1").id;
       const channel2Id = interaction.options.getChannel("channel2").id;
       const channel3Id = interaction.options.getChannel("channel3").id;
+      const language = interaction.options.getString("language");
 
       // Guardar los canales de pesca en la base de datos
       await GuildSchema.findOneAndUpdate(
@@ -53,6 +63,7 @@ module.exports = {
           canal_pesca_1: channel1Id,
           canal_pesca_2: channel2Id,
           canal_pesca_3: channel3Id,
+          language: language,
         },
         { upsert: true }
       );

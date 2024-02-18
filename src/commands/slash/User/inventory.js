@@ -7,6 +7,7 @@ const ExtendedClient = require("../../../class/ExtendedClient");
 const Usuario = require("../../../schemas/Usuario");
 const Item = require("../../../schemas/Item");
 const GuildSchema = require("../../../schemas/GuildSchema");
+const colorsEmbed = require("../../../utility/colorsEmbed");
 
 module.exports = {
   structure: new SlashCommandBuilder()
@@ -25,6 +26,11 @@ module.exports = {
       const usuario = await Usuario.findOne({ idDiscord: userId });
       if (!usuario) {
         const guild = await GuildSchema.findOne({ guild: guildId });
+        if (!guild) {
+          return await interaction.reply(
+            "Tell your server administrator to run the /setup command to set up the bot"
+          );
+        }
         const language = guild.language;
         const errorMessage =
           language === "en"
@@ -36,6 +42,11 @@ module.exports = {
       // Verificar si el usuario tiene algún objeto en su inventario
       if (!usuario.inventario || usuario.inventario.length === 0) {
         const guild = await GuildSchema.findOne({ guild: guildId });
+        if (!guild) {
+          return await interaction.reply(
+            "Tell your server administrator to run the /setup command to set up the bot"
+          );
+        }
         const language = guild.language;
         const errorMessage =
           language === "en"
@@ -56,10 +67,16 @@ module.exports = {
 
       // Crear un mensaje embed con el inventario del usuario
       const guild = await GuildSchema.findOne({ guild: guildId });
+      if (!guild) {
+        return await interaction.reply(
+          "Tell your server administrator to run the /setup command to set up the bot"
+        );
+      }
       const language = guild.language;
       const embed = new EmbedBuilder()
         .setTitle(language === "en" ? "Inventory" : "Inventario")
         .setTimestamp()
+        .setColor(colorsEmbed["blue"])
         .setFooter({
           text: `${interaction.user.username} ${
             language === "en" ? "inventory" : "inventario"
@@ -78,9 +95,11 @@ module.exports = {
           const item = await Item.findOne({ idUso: itemId });
 
           if (item) {
-            const formattedItem = `${
+            // Formatear el idUso para que siempre tenga al menos 4 caracteres
+            const formattedIdUso = String(item.idUso).padStart(4, " ");
+            const formattedItem = `\`${formattedIdUso}\` ‎ ${item.emoji} ‎ ${
               language === "en" ? item.nombre : item.nombreES
-            } ${item.emoji} (${item.idUso}) - ${itemCount}`;
+            } (x${itemCount})`;
             description += `${formattedItem}\n`;
           }
         }

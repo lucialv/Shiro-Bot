@@ -1,11 +1,11 @@
+const fs = require("fs");
+const path = require("path");
 const {
   ChatInputCommandInteraction,
   SlashCommandBuilder,
   EmbedBuilder,
 } = require("discord.js");
-const ExtendedClient = require("../../../class/ExtendedClient");
-const config = require("../../../config");
-const GuildSchema = require("../../../schemas/GuildSchema");
+const colorsEmbed = require("../../../utility/colorsEmbed");
 
 module.exports = {
   structure: new SlashCommandBuilder()
@@ -21,26 +21,43 @@ module.exports = {
   run: async (client, interaction) => {
     await interaction.deferReply();
 
-    const guildId = interaction.guild.id;
-    const guild = await GuildSchema.findOne({ guild: guildId });
-    const language = guild.language;
-
-    const mapIntCmds = client.applicationcommandsArray.map(
-      (v) =>
-        `\`${v.type === 2 || v.type === 3 ? "" : "/"}${v.name}\`: ${
-          v.description || "(No description)"
-        }`
+    const commandsPath = path.join(
+      __dirname,
+      "..",
+      "..",
+      "..",
+      "commands",
+      "slash"
     );
+    const categories = fs.readdirSync(commandsPath);
 
-    await interaction.followUp({
-      embeds: [
-        new EmbedBuilder()
-          .setTitle(language === "en" ? "Help" : "Menú de ayuda")
-          .addFields({
-            name: `${language === "en" ? "Commands" : "Comandos"}`,
-            value: `${mapIntCmds.join("\n")}`,
-          }),
-      ],
-    });
+    const embed = new EmbedBuilder()
+      .setTitle("Help")
+      .setColor(colorsEmbed["blue"])
+      .setDescription("View all the possible commands by category:");
+
+    for (const category of categories) {
+      // Exclude "Developers" category
+      if (category.toLowerCase() === "developers") continue;
+
+      const categoryPath = path.join(commandsPath, category);
+      const categoryCommands = fs
+        .readdirSync(categoryPath)
+        .filter((file) => file.endsWith(".js"))
+        .map((file) => require(path.join(categoryPath, file)));
+
+      const commandsList = categoryCommands
+        .map(
+          (cmd) =>
+            `\`${cmd.structure.name}\`: ${
+              cmd.structure.description || "(No description)"
+            }`
+        )
+        .join("\n");
+
+      embed.addFields({ name: category, value: commandsList });
+    }
+
+    await interaction.followUp({ embeds: [embed.toJSON()] });
   },
 };

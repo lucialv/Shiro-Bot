@@ -7,6 +7,7 @@ const ExtendedClient = require("../../../class/ExtendedClient");
 const Usuario = require("../../../schemas/Usuario");
 const Pez = require("../../../schemas/Pez");
 const expUntilNextLevel = require("../../../utility/expUntilNextLevel");
+const colorsEmbed = require("../../../utility/colorsEmbed");
 const GuildSchema = require("../../../schemas/GuildSchema");
 
 module.exports = {
@@ -28,6 +29,11 @@ module.exports = {
       const userId = interaction.user.id;
       const guildId = interaction.guild.id;
       const guild = await GuildSchema.findOne({ guild: guildId });
+      if (!guild) {
+        return await interaction.reply(
+          "Tell your server administrator to run the /setup command to set up the bot"
+        );
+      }
       const language = guild.language;
 
       const pezIndex = interaction.options.getInteger("id") - 1;
@@ -70,7 +76,7 @@ module.exports = {
           } 🎣`,
           iconURL: interaction.user.displayAvatarURL(),
         })
-        .setColor("#FFC0CB")
+        .setColor(colorsEmbed["blue"])
         .setImage(pezInfo.foto);
 
       await interaction.reply({ embeds: [embed] });

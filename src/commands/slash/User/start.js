@@ -6,6 +6,7 @@ const {
 const ExtendedClient = require("../../../class/ExtendedClient");
 const Usuario = require("../../../schemas/Usuario");
 const GuildSchema = require("../../../schemas/GuildSchema");
+const colorsEmbed = require("../../../utility/colorsEmbed");
 
 module.exports = {
   structure: new SlashCommandBuilder()
@@ -20,6 +21,11 @@ module.exports = {
       const userId = interaction.user.id;
       const guildId = interaction.guild.id;
       const guild = await GuildSchema.findOne({ guild: guildId });
+      if (!guild) {
+        return await interaction.reply(
+          "Tell your server administrator to run the /setup command to set up the bot"
+        );
+      }
       const language = guild.language;
 
       // Buscar al usuario en la base de datos
@@ -47,14 +53,14 @@ module.exports = {
         .setTitle(
           language === "en"
             ? "Welcome to the fishing world!"
-            : "Bienvenid@ al mundo de la pesca!"
+            : "Bienvenido/a al mundo de la pesca!"
         )
         .setDescription(
           language === "en"
             ? "I've created your account. You have `250` 🍪 to start with! Why you don't try to buy a rod? `/buy 1`"
             : "He creado tu cuenta. ¡Tienes `250` 🍪 para empezar! ¿Por qué no intentas comprar una caña? `/buy 1`"
         )
-        .setColor("#FFC0CB")
+        .setColor(colorsEmbed["blue"])
         .setFooter({
           text: `${interaction.user.username} ${
             language === "en" ? "welcome" : "bienvenid@"

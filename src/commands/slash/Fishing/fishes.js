@@ -7,6 +7,7 @@ const {
 } = require("discord.js");
 const Usuario = require("../../../schemas/Usuario");
 const GuildSchema = require("../../../schemas/GuildSchema");
+const colorsEmbed = require("../../../utility/colorsEmbed");
 
 // Definir emojis para cada rareza
 const rarezaEmojis = {
@@ -43,6 +44,11 @@ module.exports = {
       const userId = interaction.user.id;
       const guildId = interaction.guild.id;
       const guild = await GuildSchema.findOne({ guild: guildId });
+      if (!guild) {
+        return await interaction.reply(
+          "Tell your server administrator to run the /setup command to set up the bot"
+        );
+      }
       const language = guild.language;
       // Buscar al usuario en la base de datos
       const usuario = await Usuario.findOne({ idDiscord: userId });
@@ -75,6 +81,7 @@ module.exports = {
               : "Tienes los siguientes peces en tu inventario"
           }:`
         )
+        .setColor(colorsEmbed["blue"])
         .setTimestamp()
         .setFooter({
           text: `${interaction.user.username} ${

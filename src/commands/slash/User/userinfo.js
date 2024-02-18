@@ -8,6 +8,7 @@ const ExtendedClient = require("../../../class/ExtendedClient");
 const { profileImage } = require("discord-arts");
 const Usuario = require("../../../schemas/Usuario");
 const GuildSchema = require("../../../schemas/GuildSchema");
+const colorsEmbed = require("../../../utility/colorsEmbed");
 
 module.exports = {
   structure: new SlashCommandBuilder()
@@ -24,6 +25,11 @@ module.exports = {
     const member = interaction.options.getMember("user") || interaction.member;
     const guildId = interaction.guild.id;
     const guild = await GuildSchema.findOne({ guild: guildId });
+    if (!guild) {
+      return await interaction.reply(
+        "Tell your server administrator to run the /setup command to set up the bot"
+      );
+    }
     const language = guild.language;
 
     if (member.user.bot) {
@@ -33,7 +39,9 @@ module.exports = {
           : "No puedes obtener información sobre un bot. <a:6764_no:1097556585192112149>";
       return interaction.reply({
         embeds: [
-          new EmbedBuilder().setDescription(errorMessage).setColor("#e4f1ff"),
+          new EmbedBuilder()
+            .setDescription(errorMessage)
+            .setColor(colorsEmbed["blue"]),
         ],
         ephemeral: true,
       });
@@ -68,7 +76,10 @@ module.exports = {
     } else {
       badges = "<a:6764_no:1097556585192112149>";
     }
-
+    if (usuario.donator) {
+      badges +=
+        "<:donator1:1208688704651005963><:donator2:1208688706312208414><:donator3:1208688707528556544><:donator4:1208688709055283210>";
+    }
     // Eliminar el último espacio en blanco, si existe
     badges = badges.trim();
 
@@ -94,7 +105,7 @@ module.exports = {
           }`,
           iconURL: member.displayAvatarURL(),
         })
-        .setColor("#e4f1ff")
+        .setColor(colorsEmbed["blue"])
         .setDescription(
           language === "en"
             ? `In <t:${joinTime}:D>, <@${userId}> started fishing!`

@@ -7,6 +7,7 @@ const {
 const ExtendedClient = require("../../../class/ExtendedClient");
 const Pez = require("../../../schemas/Pez");
 const expUntilNextLevel = require("../../../utility/expUntilNextLevel");
+const colorsEmbed = require("../../../utility/colorsEmbed");
 const Usuario = require("../../../schemas/Usuario");
 const GuildSchema = require("../../../schemas/GuildSchema");
 
@@ -44,14 +45,14 @@ module.exports = {
       let rodType; // ID de la caña de pescar
 
       const guildData = await GuildSchema.findOne({ guild: guildId });
-      const language = guildData.language;
+
       if (!guildData) {
         return await interaction.reply(
-          language === "en"
-            ? "The fishing channels have not been configured yet. Contact the server administrator to run `/setup`"
-            : "Los canales de pesca no han sido configurados. Contacta al administrador del servidor para que ejecute `/setup`"
+          "The fishing channels have not been configured yet. Contact the server administrator to run `/setup`"
         );
       }
+      const language = guildData.language;
+
       if (channelId === guildData.canal_pesca_1) {
         rodType = 10;
       } else if (channelId === guildData.canal_pesca_2) {
@@ -179,7 +180,7 @@ module.exports = {
                 value: rodBrokenMessage,
               }
             )
-            .setColor("#FFC0CB");
+            .setColor(colorsEmbed["blue"]);
           await usuario.save();
           return await interaction.reply({ embeds: [embed] });
         } else {
@@ -193,7 +194,7 @@ module.exports = {
               name: fishedMessage,
               value: nadaPescado,
             })
-            .setColor("#FFC0CB");
+            .setColor(colorsEmbed["blue"]);
           await usuario.save();
           return await interaction.reply({ embeds: [embed] });
         }
@@ -217,7 +218,7 @@ module.exports = {
                 value: rodBrokenMessage,
               }
             )
-            .setColor("#FFC0CB");
+            .setColor(colorsEmbed["blue"]);
           await usuario.save();
           return await interaction.reply({ embeds: [embed] });
         } else {
@@ -231,7 +232,7 @@ module.exports = {
               text: `${interaction.user.username} ${intentarPescar}`,
               iconURL: interaction.user.displayAvatarURL(),
             })
-            .setColor("#FFC0CB");
+            .setColor(colorsEmbed["blue"]);
           await usuario.save();
           return await interaction.reply({ embeds: [embed] });
         }
@@ -335,13 +336,20 @@ module.exports = {
         // Incrementar el contador de peces capturados
         usuario.capturados++;
         // Añadir dinero al usuario
-        const dineroGanado = Math.floor(Math.random() * 20) + 1;
+        let dineroGanado = Math.floor(Math.random() * 20) + 1;
+
+        if (usuario.donatorPerks) {
+          dineroGanado = dineroGanado * 2;
+        }
         usuario.dinero += dineroGanado;
 
         // Encontrar el pez que está seleccionado
         const pezSeleccionado = usuario.peces.find((p) => p.selected);
         if (pezSeleccionado) {
           let expGanada = Math.floor(Math.random() * 100) + 1;
+          if (usuario.donatorPerks) {
+            expGanada = expGanada * 2;
+          }
           const expNecesaria = expUntilNextLevel[pezSeleccionado.nivel];
           if (expGanada + pezSeleccionado.exp >= expNecesaria) {
             pezSeleccionado.nivel++;
@@ -377,7 +385,7 @@ module.exports = {
                   text: `${interaction.user.username} ${pescadoUnPez}`,
                   iconURL: interaction.user.displayAvatarURL(),
                 })
-                .setColor("#FFC0CB");
+                .setColor(colorsEmbed["blue"]);
               await usuario.save();
               await interaction.reply({ embeds: [embed] });
             } else {
@@ -406,7 +414,7 @@ module.exports = {
                   text: `${interaction.user.username} ${pescadoUnPez}`,
                   iconURL: interaction.user.displayAvatarURL(),
                 })
-                .setColor("#FFC0CB");
+                .setColor(colorsEmbed["blue"]);
               await usuario.save();
               await interaction.reply({ embeds: [embed] });
             }
@@ -440,7 +448,7 @@ module.exports = {
                   text: `${interaction.user.username} ${pescadoUnPez}`,
                   iconURL: interaction.user.displayAvatarURL(),
                 })
-                .setColor("#FFC0CB");
+                .setColor(colorsEmbed["blue"]);
               await usuario.save();
               await interaction.reply({ embeds: [embed] });
             } else {
@@ -467,7 +475,7 @@ module.exports = {
                   text: `${interaction.user.username} ${pescadoUnPez}`,
                   iconURL: interaction.user.displayAvatarURL(),
                 })
-                .setColor("#FFC0CB");
+                .setColor(colorsEmbed["blue"]);
               await usuario.save();
               await interaction.reply({ embeds: [embed] });
             }
@@ -497,7 +505,7 @@ module.exports = {
                 text: `${interaction.user.username} ${pescadoUnPez}`,
                 iconURL: interaction.user.displayAvatarURL(),
               })
-              .setColor("#FFC0CB");
+              .setColor(colorsEmbed["blue"]);
             await usuario.save();
             await interaction.reply({ embeds: [embed] });
           } else {
@@ -520,7 +528,7 @@ module.exports = {
                 text: `${interaction.user.username} ${pescadoUnPez}`,
                 iconURL: interaction.user.displayAvatarURL(),
               })
-              .setColor("#FFC0CB");
+              .setColor(colorsEmbed["blue"]);
             await usuario.save();
             await interaction.reply({ embeds: [embed] });
           }
@@ -547,7 +555,7 @@ module.exports = {
               text: `${interaction.user.username} ${intentarPescar}`,
               iconURL: interaction.user.displayAvatarURL(),
             })
-            .setColor("#FFC0CB");
+            .setColor(colorsEmbed["blue"]);
           await usuario.save();
           await interaction.reply({ embeds: [embed] });
         } else {
@@ -565,7 +573,7 @@ module.exports = {
               text: `${interaction.user.username} ${intentarPescar}`,
               iconURL: interaction.user.displayAvatarURL(),
             })
-            .setColor("#FFC0CB");
+            .setColor(colorsEmbed["blue"]);
           await usuario.save();
           await interaction.reply({ embeds: [embed] });
         }
