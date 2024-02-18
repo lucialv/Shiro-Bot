@@ -11,9 +11,6 @@ module.exports = {
   structure: new SlashCommandBuilder()
     .setName("help")
     .setDescription("View all the possible commands!"),
-  options: {
-    cooldown: 15000,
-  },
   /**
    * @param {ExtendedClient} client
    * @param {ChatInputCommandInteraction} interaction

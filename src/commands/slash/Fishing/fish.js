@@ -33,6 +33,9 @@ module.exports = {
   structure: new SlashCommandBuilder()
     .setName("fish")
     .setDescription("Fish a random fish 🎣"),
+  options: {
+    cooldown: 2000,
+  },
   /**
    * @param {ExtendedClient} client
    * @param {ChatInputCommandInteraction} interaction
