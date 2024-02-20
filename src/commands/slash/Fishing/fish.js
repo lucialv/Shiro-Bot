@@ -151,7 +151,14 @@ module.exports = {
           ? "The fish escaped <:jettcry:1206206360782639144>"
           : "El pez escapó <:jettcry:1206206360782639144>";
 
-      const suerte = Math.floor(Math.random() * 100) + 1;
+      let suerte = Math.floor(Math.random() * 100) + 1;
+      if (rodType === 10) {
+        suerte = Math.floor(Math.random() * 100) + 1;
+      } else if (rodType === 11) {
+        suerte = Math.floor(Math.random() * 70) + 1;
+      } else if (rodType === 12) {
+        suerte = Math.floor(Math.random() * 50) + 1;
+      }
       let rarezaAleatoria;
       if (suerte <= 1) {
         rarezaAleatoria = "Legendary";
@@ -339,8 +346,20 @@ module.exports = {
         // Incrementar el contador de peces capturados
         usuario.capturados++;
         // Añadir dinero al usuario
-        let dineroGanado = Math.floor(Math.random() * 20) + 1;
-
+        let dineroGanado;
+        if (rarezaAleatoria === "Common") {
+          dineroGanado = Math.floor(Math.random() * 10) + 1;
+        } else if (rarezaAleatoria === "Rare") {
+          dineroGanado = Math.floor(Math.random() * 15) + 1;
+        } else if (rarezaAleatoria === "Very rare") {
+          dineroGanado = Math.floor(Math.random() * 20) + 1;
+        } else if (rarezaAleatoria === "Epic") {
+          dineroGanado = Math.floor(Math.random() * 25) + 1;
+        } else if (rarezaAleatoria === "Legendary") {
+          dineroGanado = Math.floor(Math.random() * 35) + 1;
+        } else if (rarezaAleatoria === "Mitic") {
+          dineroGanado = Math.floor(Math.random() * 30) + 1;
+        }
         if (usuario.donatorPerks) {
           dineroGanado = dineroGanado * 2;
         }
@@ -349,7 +368,20 @@ module.exports = {
         // Encontrar el pez que está seleccionado
         const pezSeleccionado = usuario.peces.find((p) => p.selected);
         if (pezSeleccionado) {
-          let expGanada = Math.floor(Math.random() * 100) + 1;
+          let expGanada;
+          if (rarezaAleatoria === "Common") {
+            expGanada = Math.floor(Math.random() * 100) + 1;
+          } else if (rarezaAleatoria === "Rare") {
+            expGanada = Math.floor(Math.random() * 150) + 1;
+          } else if (rarezaAleatoria === "Very rare") {
+            expGanada = Math.floor(Math.random() * 200) + 1;
+          } else if (rarezaAleatoria === "Epic") {
+            expGanada = Math.floor(Math.random() * 250) + 1;
+          } else if (rarezaAleatoria === "Legendary") {
+            expGanada = Math.floor(Math.random() * 300) + 1;
+          } else if (rarezaAleatoria === "Mitic") {
+            expGanada = Math.floor(Math.random() * 275) + 1;
+          }
           if (usuario.donatorPerks) {
             expGanada = expGanada * 2;
           }
