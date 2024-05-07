@@ -9,6 +9,7 @@ const Pez = require("../../../schemas/Pez");
 const expUntilNextLevel = require("../../../utility/expUntilNextLevel");
 const colorsEmbed = require("../../../utility/colorsEmbed");
 const GuildSchema = require("../../../schemas/GuildSchema");
+const config = require("../../../config");
 
 module.exports = {
   structure: new SlashCommandBuilder()
@@ -26,6 +27,12 @@ module.exports = {
    */
   run: async (client, interaction) => {
     try {
+      if (
+        config.handler.maintenance &&
+        interaction.user.id != config.users.developers
+      ) {
+        return await interaction.reply(config.handler.maintenanceMessage);
+      }
       const userId = interaction.user.id;
       const guildId = interaction.guild.id;
       const guild = await GuildSchema.findOne({ guild: guildId });
@@ -76,8 +83,8 @@ module.exports = {
           } 🎣`,
           iconURL: interaction.user.displayAvatarURL(),
         })
-        .setColor(colorsEmbed["blue"])
-        .setImage(pezInfo.foto);
+        .setColor(colorsEmbed["blue"]);
+      // .setImage(pezInfo.foto);
 
       await interaction.reply({ embeds: [embed] });
     } catch (error) {

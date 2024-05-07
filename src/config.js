@@ -6,6 +6,9 @@ module.exports = {
   handler: {
     prefix: "?",
     deploy: true,
+    maintenance: true,
+    maintenanceMessage:
+      "The bot is under **maintenance**, try again later!\nExpected time to end the maintenance <t:1715180400>\nIf you have any issues pls contact with the developer <@300969054649450496> <a:whiteheart:1165441566203203664>",
     commands: {
       prefix: true,
       slash: true,

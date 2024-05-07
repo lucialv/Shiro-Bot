@@ -6,6 +6,7 @@ const {
   EmbedBuilder,
 } = require("discord.js");
 const colorsEmbed = require("../../../utility/colorsEmbed");
+const config = require("../../../config");
 
 module.exports = {
   structure: new SlashCommandBuilder()
@@ -16,6 +17,9 @@ module.exports = {
    * @param {ChatInputCommandInteraction} interaction
    */
   run: async (client, interaction) => {
+    if (config.handler.maintenance) {
+      return await interaction.reply(config.handler.maintenanceMessage);
+    }
     await interaction.deferReply();
 
     const commandsPath = path.join(

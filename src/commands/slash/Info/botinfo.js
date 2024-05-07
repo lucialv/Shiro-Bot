@@ -20,6 +20,18 @@ module.exports = {
     try {
       //get the number of guilds the bot is in
       const guilds = client.guilds.cache.size;
+
+      //get the number of people of the guild the bot is in
+      var usersCount = 0;
+      client.guilds.cache.mapValues((guild) => {
+        const _x = client.guilds.cache.get(guild.id);
+        usersCount += client.guilds.cache.reduce(
+          (a, g) => a + g.memberCount,
+          0
+        );
+      });
+      console.log(usersCount);
+
       const guildId = interaction.guild.id;
       const guild = await GuildSchema.findOne({ guild: guildId });
       if (!guild) {
@@ -48,6 +60,11 @@ module.exports = {
           {
             name: language === "en" ? "Guilds" : "Servidores",
             value: `${guilds}`,
+            inline: true,
+          },
+          {
+            name: language === "en" ? "Total Users" : "Usuarios totales",
+            value: `${usersCount}`,
             inline: true,
           },
           {

@@ -4,6 +4,7 @@ const {
   PermissionFlagsBits,
 } = require("discord.js");
 const GuildSchema = require("../../../schemas/GuildSchema");
+const config = require("../../../config");
 
 module.exports = {
   structure: new SlashCommandBuilder()
@@ -32,6 +33,12 @@ module.exports = {
    */
   run: async (client, interaction) => {
     try {
+      if (
+        config.handler.maintenance &&
+        interaction.user.id != config.users.developers
+      ) {
+        return await interaction.reply(config.handler.maintenanceMessage);
+      }
       // Obtener el idioma seleccionado por el usuario
       const language = interaction.options.getString("language");
 

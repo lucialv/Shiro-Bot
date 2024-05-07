@@ -9,6 +9,7 @@ const ExtendedClient = require("../../../class/ExtendedClient");
 const Item = require("../../../schemas/Item");
 const GuildSchema = require("../../../schemas/GuildSchema");
 const colorsEmbed = require("../../../utility/colorsEmbed");
+const config = require("../../../config");
 
 // Constantes para el control de paginación
 const ITEMS_PER_PAGE = 3;
@@ -23,6 +24,12 @@ module.exports = {
    */
   run: async (client, interaction) => {
     try {
+      if (
+        config.handler.maintenance &&
+        interaction.user.id != config.users.developers
+      ) {
+        return await interaction.reply(config.handler.maintenanceMessage);
+      }
       // Consultar todos los items comprables en la tienda
       const items = await Item.find({ comprable: true });
       const guildId = interaction.guild.id;

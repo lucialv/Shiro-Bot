@@ -8,6 +8,7 @@ const Usuario = require("../../../schemas/Usuario");
 const Item = require("../../../schemas/Item");
 const GuildSchema = require("../../../schemas/GuildSchema");
 const colorsEmbed = require("../../../utility/colorsEmbed");
+const config = require("../../../config");
 
 module.exports = {
   structure: new SlashCommandBuilder()
@@ -19,6 +20,12 @@ module.exports = {
    */
   run: async (client, interaction) => {
     try {
+      if (
+        config.handler.maintenance &&
+        interaction.user.id != config.users.developers
+      ) {
+        return await interaction.reply(config.handler.maintenanceMessage);
+      }
       const userId = interaction.user.id;
       const guildId = interaction.guild.id;
 

@@ -10,6 +10,7 @@ const expUntilNextLevel = require("../../../utility/expUntilNextLevel");
 const colorsEmbed = require("../../../utility/colorsEmbed");
 const Usuario = require("../../../schemas/Usuario");
 const GuildSchema = require("../../../schemas/GuildSchema");
+const config = require("../../../config");
 
 const rarezaEmojis = {
   Common:
@@ -42,6 +43,12 @@ module.exports = {
    */
   run: async (client, interaction) => {
     try {
+      if (
+        config.handler.maintenance &&
+        interaction.user.id != config.users.developers
+      ) {
+        return await interaction.reply(config.handler.maintenanceMessage);
+      }
       const guildId = interaction.guild.id;
       const channelId = interaction.channelId;
 

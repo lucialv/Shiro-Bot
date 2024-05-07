@@ -9,6 +9,7 @@ const { profileImage } = require("discord-arts");
 const Usuario = require("../../../schemas/Usuario");
 const GuildSchema = require("../../../schemas/GuildSchema");
 const colorsEmbed = require("../../../utility/colorsEmbed");
+const config = require("../../../config");
 
 module.exports = {
   structure: new SlashCommandBuilder()
@@ -22,6 +23,9 @@ module.exports = {
    * @param {ChatInputCommandInteraction} interaction
    */
   run: async (client, interaction) => {
+    if (config.handler.maintenance) {
+      return await interaction.reply(config.handler.maintenanceMessage);
+    }
     const member = interaction.options.getMember("user") || interaction.member;
     const guildId = interaction.guild.id;
     const guild = await GuildSchema.findOne({ guild: guildId });

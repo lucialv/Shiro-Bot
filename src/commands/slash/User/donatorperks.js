@@ -6,6 +6,7 @@ const {
 const ExtendedClient = require("../../../class/ExtendedClient");
 const Usuario = require("../../../schemas/Usuario");
 const GuildSchema = require("../../../schemas/GuildSchema");
+const config = require("../../../config");
 
 module.exports = {
   structure: new SlashCommandBuilder()
@@ -27,6 +28,12 @@ module.exports = {
    */
   run: async (client, interaction) => {
     try {
+      if (
+        config.handler.maintenance &&
+        interaction.user.id != config.users.developers
+      ) {
+        return await interaction.reply(config.handler.maintenanceMessage);
+      }
       const { options } = interaction;
 
       const userId = interaction.user.id;
