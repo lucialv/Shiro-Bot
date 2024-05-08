@@ -79,6 +79,7 @@ module.exports = {
       // Marcar el pez como favorito
       const pezIndex = numeroPez - 1;
       usuario.peces[pezIndex].nombre = nuevoNombre;
+      usuario.peces[pezIndex].renamed = true;
 
       // Guardar los cambios en la base de datos
       await usuario.save();
