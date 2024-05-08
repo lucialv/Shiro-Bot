@@ -6,7 +6,7 @@ module.exports = {
   handler: {
     prefix: "?",
     deploy: true,
-    maintenance: true,
+    maintenance: false,
     maintenanceMessage:
       "The bot is under **maintenance**, try again later!\nExpected time to end the maintenance <t:1715180400>\nIf you have any issues pls contact with the developer <@300969054649450496> <a:whiteheart:1165441566203203664>",
     commands: {
@@ -21,11 +21,7 @@ module.exports = {
     },
   },
   users: {
-    developers: [
-      "300969054649450496",
-      "408366484717436938",
-      "530879931878604840",
-    ],
+    developers: ["300969054649450496", "408366484717436938"],
   },
   development: {
     enabled: false,

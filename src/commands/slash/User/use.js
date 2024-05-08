@@ -88,13 +88,23 @@ module.exports = {
         if (itemToUse.durabilidad === 0) {
           usuario.inventario.splice(itemIndex, 1);
         }
-        usuario.dinero += 100;
+        //añadir dinero entre 1000 y 2000
+        usuario.dinero += Math.floor(Math.random() * 1000) + 1000;
+
         // Guardar los cambios en el usuario
         await usuario.save();
         return await interaction.reply(
           language === "en"
             ? `You have successfully used ${itemToUse.nombre} and you have earned 100 🍪`
             : `Has usado ${itemToUse.nombreES} con éxito y has ganado 100 🍪`
+        );
+      }
+
+      if (itemIdUso === 13) {
+        return await interaction.reply(
+          language === "en"
+            ? "This item is currently on development, thank you for understanding!"
+            : "Este item está en desarrollo, ¡gracias por entender!"
         );
       }
 
