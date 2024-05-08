@@ -22,7 +22,7 @@ module.exports = {
     try {
       if (
         config.handler.maintenance &&
-        interaction.user.id != config.users.developers
+        !config.users.developers.includes(interaction.user.id)
       ) {
         return await interaction.reply(config.handler.maintenanceMessage);
       }
@@ -63,21 +63,21 @@ module.exports = {
         if (hours === 23 && days === -1) {
           return await interaction.reply(
             language === "en"
-              ? `You can claim your daily reward in ${minutos} minutes and ${segundos} seconds`
-              : `Puedes reclamar tu recompensa diaria en ${minutos} minutos y ${segundos} segundos`
+              ? `You can claim your daily reward in **${minutos} minutes** and **${segundos} seconds**.`
+              : `Puedes reclamar tu recompensa diaria en **${minutos} minutos** y **${segundos} segundos**.`
           );
         }
         if (hours < 23 && days === -1) {
           return await interaction.reply(
             language === "en"
-              ? `You can claim your daily reward in ${horas} hours, ${minutos} minutes and ${segundos} seconds`
-              : `Puedes reclamar tu recompensa diaria en ${horas} horas, ${minutos} minutos y ${segundos} segundos`
+              ? `You can claim your daily reward in **${horas} hours**, **${minutos} minutes** and **${segundos} seconds**.`
+              : `Puedes reclamar tu recompensa diaria en **${horas} horas**, **${minutos} minutos** y **${segundos} segundos**.`
           );
         }
         if (days === -2) {
           usuario.dailyStreak++;
         } else if (days <= -3) {
-          usuario.dailyStreak = 0;
+          usuario.dailyStreak = 1;
         }
       }
       // Consultar el item de recompensa diaria idUso 1000
@@ -89,7 +89,6 @@ module.exports = {
 
       // Guardar los cambios en el usuario
       await usuario.save();
-
       embed = new EmbedBuilder()
         .setTitle(
           language === "en"

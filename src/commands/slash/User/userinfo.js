@@ -23,7 +23,10 @@ module.exports = {
    * @param {ChatInputCommandInteraction} interaction
    */
   run: async (client, interaction) => {
-    if (config.handler.maintenance) {
+    if (
+      config.handler.maintenance &&
+      !config.users.developers.includes(interaction.user.id)
+    ) {
       return await interaction.reply(config.handler.maintenanceMessage);
     }
     const member = interaction.options.getMember("user") || interaction.member;

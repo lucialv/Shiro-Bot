@@ -26,7 +26,7 @@ module.exports = {
     try {
       if (
         config.handler.maintenance &&
-        interaction.user.id != config.users.developers
+        !config.users.developers.includes(interaction.user.id)
       ) {
         return await interaction.reply(config.handler.maintenanceMessage);
       }
@@ -90,10 +90,10 @@ module.exports = {
           language === "en"
             ? `The fish ${
                 usuario.peces[numeroPez - 1].nombre
-              } has been unselected.`
+              } has been unselected. <:Blobhaj:1183898007712833598>`
             : `El pez ${
                 usuario.peces[numeroPez - 1].nombre
-              } ha sido deseleccionado.`
+              } ha sido deseleccionado. <:Blobhaj:1183898007712833598>`
         );
       }
 
@@ -115,8 +115,8 @@ module.exports = {
           usuario.peces[numeroPez - 1].nombre
         }\` ${
           language === "en"
-            ? "has been selected. You can now level up this fish while fishing."
-            : "ha sido seleccionado. Ahora puedes subir de nivel a este pez mientras pescas."
+            ? "has been selected. <:Blobhaj:1183898007712833598>\nYou can now level up this fish while fishing."
+            : "ha sido seleccionado. <:Blobhaj:1183898007712833598>\nAhora puedes subir de nivel a este pez mientras pescas."
         }`
       );
     } catch (error) {

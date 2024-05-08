@@ -21,7 +21,11 @@ module.exports = {
     },
   },
   users: {
-    developers: ["300969054649450496"],
+    developers: [
+      "300969054649450496",
+      "408366484717436938",
+      "530879931878604840",
+    ],
   },
   development: {
     enabled: false,

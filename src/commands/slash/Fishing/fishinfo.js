@@ -29,7 +29,7 @@ module.exports = {
     try {
       if (
         config.handler.maintenance &&
-        interaction.user.id != config.users.developers
+        !config.users.developers.includes(interaction.user.id)
       ) {
         return await interaction.reply(config.handler.maintenanceMessage);
       }

@@ -27,7 +27,7 @@ module.exports = {
     try {
       if (
         config.handler.maintenance &&
-        interaction.user.id != config.users.developers
+        !config.users.developers.includes(interaction.user.id)
       ) {
         return await interaction.reply(config.handler.maintenanceMessage);
       }
@@ -83,15 +83,36 @@ module.exports = {
       // Guardar los cambios en el usuario
       await usuario.save();
 
-      await interaction.reply(
-        `${
-          language === "en"
-            ? "You have successfully bought a"
-            : "Acabas de comprar"
-        } \`${language === "en" ? itemToBuy.nombre : itemToBuy.nombreES}\` ${
-          language === "en" ? "for" : "por"
-        } \`${itemToBuy.precio}\` 🍪`
-      );
+      if (
+        itemToBuy.idUso === 10 ||
+        itemToBuy.idUso === 11 ||
+        itemToBuy.idUso === 12
+      ) {
+        await interaction.reply(
+          `${
+            language === "en"
+              ? "You have successfully bought a"
+              : "Acabas de comprar"
+          } \`${language === "en" ? itemToBuy.nombre : itemToBuy.nombreES}\` ${
+            language === "en" ? "for" : "por"
+          } \`${itemToBuy.precio}\` 🍪.\n${
+            language === "en"
+              ? "You can select it with"
+              : "Puedes seleccionarla con"
+          } \`/selectrod\``
+        );
+        return;
+      } else {
+        await interaction.reply(
+          `${
+            language === "en"
+              ? "You have successfully bought a"
+              : "Acabas de comprar"
+          } \`${language === "en" ? itemToBuy.nombre : itemToBuy.nombreES}\` ${
+            language === "en" ? "for" : "por"
+          } \`${itemToBuy.precio}\` 🍪`
+        );
+      }
     } catch (error) {
       console.error("Error al comprar un item:", error);
       await interaction.reply(

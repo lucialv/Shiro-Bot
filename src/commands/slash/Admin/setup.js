@@ -13,22 +13,8 @@ module.exports = {
     .setDescription("Configures fishing channels.")
     .addChannelOption((option) =>
       option
-        .setName("channel1")
-        .setDescription("First fishing channel")
-        .addChannelTypes(ChannelType.GuildText)
-        .setRequired(true)
-    )
-    .addChannelOption((option) =>
-      option
-        .setName("channel2")
-        .setDescription("Second fishing channel")
-        .addChannelTypes(ChannelType.GuildText)
-        .setRequired(true)
-    )
-    .addChannelOption((option) =>
-      option
-        .setName("channel3")
-        .setDescription("Third fishing channel")
+        .setName("channel")
+        .setDescription("Select the fishing channel")
         .addChannelTypes(ChannelType.GuildText)
         .setRequired(true)
     )
@@ -51,25 +37,21 @@ module.exports = {
     try {
       if (
         config.handler.maintenance &&
-        interaction.user.id != config.users.developers
+        !config.users.developers.includes(interaction.user.id)
       ) {
         return await interaction.reply(config.handler.maintenanceMessage);
       }
       const guildId = interaction.guild.id;
       const guild = await GuildSchema.findOne({ guild: guildId });
 
-      const channel1Id = interaction.options.getChannel("channel1").id;
-      const channel2Id = interaction.options.getChannel("channel2").id;
-      const channel3Id = interaction.options.getChannel("channel3").id;
+      const channelId = interaction.options.getChannel("channel").id;
       const language = interaction.options.getString("language");
 
       // Guardar los canales de pesca en la base de datos
       await GuildSchema.findOneAndUpdate(
         { guild: guildId },
         {
-          canal_pesca_1: channel1Id,
-          canal_pesca_2: channel2Id,
-          canal_pesca_3: channel3Id,
+          canal_pesca_1: channelId,
           language: language,
         },
         { upsert: true }

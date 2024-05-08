@@ -45,7 +45,7 @@ module.exports = {
     try {
       if (
         config.handler.maintenance &&
-        interaction.user.id != config.users.developers
+        !config.users.developers.includes(interaction.user.id)
       ) {
         return await interaction.reply(config.handler.maintenanceMessage);
       }
@@ -63,13 +63,7 @@ module.exports = {
       }
       const language = guildData.language;
 
-      if (channelId === guildData.canal_pesca_1) {
-        rodType = 10;
-      } else if (channelId === guildData.canal_pesca_2) {
-        rodType = 11;
-      } else if (channelId === guildData.canal_pesca_3) {
-        rodType = 12;
-      } else {
+      if (!channelId === guildData.canal_pesca_1) {
         return await interaction.reply(
           language === "en"
             ? "This command can only be executed in fishing channels."
@@ -91,7 +85,31 @@ module.exports = {
       let hasRod = false;
       let rodBroken = false;
 
-      // Buscar el primer ítem con idUso = 10 (caña) en el inventario del usuario y con la menos durabilidad
+      //mirar si el usuario tiene cañas, para eso se mira si tiene un item con idUso 10, 11 o 12
+      const hasRodInInventory = usuario.inventario.some(
+        (item) => item.idUso === 10 || item.idUso === 11 || item.idUso === 12
+      );
+
+      //mirar si el usuario tiene una caña de pescar en su inventario con active == true
+      const hasActiveRodInInventory = usuario.inventario.some(
+        (item) => item.active
+      );
+      if (!hasRodInInventory) {
+        return await interaction.reply(
+          language === "en"
+            ? "You don't have a `Rod`, you need to have one to be able to fish! You can buy one with `/buy 1`"
+            : "No tienes una `Caña de pescar`, necesitas tener una para poder pescar! Puedes comprar una con `/buy 1`"
+        );
+      }
+      if (!hasActiveRodInInventory) {
+        return await interaction.reply(
+          language === "en"
+            ? "You don't have an active `Rod`, pls use `/selectrod`"
+            : "No tienes una `Caña de pescar` activa, por favor usa `/selectrod`"
+        );
+      }
+
+      // Buscar el primer ítem con item.active == TRUE en el inventario del usuario y con la menos durabilidad
       const itemIndex = usuario.inventario
         .map((item, index) => {
           return {
@@ -99,14 +117,15 @@ module.exports = {
             item,
           };
         })
-        .filter((item) => item.item.idUso === rodType)
-        .sort((a, b) => a.item.durabilidad - b.item.durabilidad)
+        .filter((item) => item.item.active)
         .map((item) => item.index)[0];
+
       if (itemIndex !== undefined) {
         const newItem = {
           ...usuario.inventario[itemIndex],
           durabilidad: usuario.inventario[itemIndex].durabilidad - 1,
         };
+        rodType = usuario.inventario[itemIndex].idUso;
         // Agregar el nuevo ítem al inventario
         usuario.inventario.splice(itemIndex, 1);
         usuario.inventario.push(newItem);
@@ -164,7 +183,7 @@ module.exports = {
       } else if (rodType === 11) {
         suerte = Math.floor(Math.random() * 70) + 1;
       } else if (rodType === 12) {
-        suerte = Math.floor(Math.random() * 50) + 1;
+        suerte = Math.floor(Math.random() * 45) + 1;
       }
       let rarezaAleatoria;
       if (suerte <= 1) {
@@ -551,28 +570,61 @@ module.exports = {
             await usuario.save();
             await interaction.reply({ embeds: [embed] });
           } else {
-            embed = new EmbedBuilder()
-              .setTitle(tituloEmbed)
-              .addFields(
-                {
-                  name: fishedMessage,
-                  value: `${pez.nombre} ${generoEmoji} ${rarezaEmoji} - \`${
-                    language === "en" ? "Level" : "Nivel"
-                  } ${pezNivel}\``,
-                },
-                {
-                  name: galletas,
-                  value: `+${dineroGanado} 🍪`,
-                }
-              )
-              .setTimestamp()
-              .setFooter({
-                text: `${interaction.user.username} ${pescadoUnPez}`,
-                iconURL: interaction.user.displayAvatarURL(),
-              })
-              .setColor(colorsEmbed["blue"]);
-            await usuario.save();
-            await interaction.reply({ embeds: [embed] });
+            if (usuario.capturados === 1) {
+              embed = new EmbedBuilder()
+                .setTitle(tituloEmbed)
+                .addFields(
+                  {
+                    name: fishedMessage,
+                    value: `${pez.nombre} ${generoEmoji} ${rarezaEmoji} - \`${
+                      language === "en" ? "Level" : "Nivel"
+                    } ${pezNivel}\``,
+                  },
+                  {
+                    name: galletas,
+                    value: `+${dineroGanado} 🍪`,
+                  },
+                  {
+                    name:
+                      language === "en" ? "Congratulations!" : "¡Felicidades!",
+                    value:
+                      language === "en"
+                        ? "You have caught your first fish! 🎣\n\nYou can select them with `/select 1`, the selected fish will earn xp while you fish."
+                        : "¡Has capturado tu primer pez! 🎣\n\nPuedes seleccionarlo con `/select 1`, el pez seleccionado ganará experiencia mientras pescas.",
+                  }
+                )
+                .setTimestamp()
+                .setFooter({
+                  text: `${interaction.user.username} ${pescadoUnPez}`,
+                  iconURL: interaction.user.displayAvatarURL(),
+                })
+                .setColor(colorsEmbed["blue"]);
+              await usuario.save();
+              await interaction.reply({ embeds: [embed] });
+            } else {
+              embed = new EmbedBuilder()
+                .setTitle(tituloEmbed)
+                .addFields(
+                  {
+                    name: fishedMessage,
+                    value: `${pez.nombre} ${generoEmoji} ${rarezaEmoji} - \`${
+                      language === "en" ? "Level" : "Nivel"
+                    } ${pezNivel}\``,
+                  },
+                  {
+                    name: galletas,
+                    value: `+${dineroGanado} 🍪`,
+                  }
+                )
+                .setTimestamp()
+                .setFooter({
+                  text: `${interaction.user.username} ${pescadoUnPez}`,
+                  iconURL: interaction.user.displayAvatarURL(),
+                })
+                .setColor(colorsEmbed["blue"]);
+              await usuario.save();
+              await interaction.reply({ embeds: [embed] });
+            }
           }
         }
       } else {

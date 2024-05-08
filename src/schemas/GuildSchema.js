@@ -19,13 +19,5 @@ module.exports = model(
       type: String,
       required: true,
     },
-    canal_pesca_2: {
-      type: String,
-      required: true,
-    },
-    canal_pesca_3: {
-      type: String,
-      required: true,
-    },
   })
 );
