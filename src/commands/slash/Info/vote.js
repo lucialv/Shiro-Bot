@@ -83,106 +83,100 @@ module.exports = {
       const apiKey = config.handler.topgg.apiKey;
       const botId = config.client.id;
 
-      try {
-        const response = await fetch(
-          `https://top.gg/api/bots/${botId}/check?userId=${userId}`,
-          {
-            headers: {
-              Authorization: apiKey,
-            },
-          }
-        );
-        if (response.ok) {
-          const data = await response.json();
-          if (data.voted === 1) {
-            // Consultar el item de recompensa diaria idUso 1001
-            const chest = await Item.find({ idUso: 1001 });
-
-            // Agregar el item al inventario del usuario
-            usuario.inventario.push(chest[0]);
-            usuario.lastVote = new Date();
-            // Guardar los cambios en el usuario
-            await usuario.save();
-            embed = new EmbedBuilder()
-              .setTitle(
-                language === "en"
-                  ? "Vote reward claimed"
-                  : "Recompensa por votar reclamada"
-              )
-              .addFields(
-                {
-                  name: language === "en" ? "You've won:" : "Has ganado:",
-                  value: `- <:masuno:1208716787148001320> ${
-                    language === "en" ? chest[0].nombre : chest[0].nombreES
-                  } ${chest[0].emoji}`,
-                },
-                {
-                  name:
-                    language === "en"
-                      ? "Thank you for voting!"
-                      : "¡Gracias por votar!",
-                  value:
-                    language === "en"
-                      ? "You can vote again in 12 hours <:heart_pink:1237816836167307265>"
-                      : "Puedes votar de nuevo en 12 horas <:heart_pink:1237816836167307265>",
-                }
-              )
-              .setTimestamp()
-              .setFooter({
-                text: `${interaction.user.username} ${
-                  language === "en" ? "vote reward" : "recompensa por votar"
-                }`,
-                iconURL: interaction.user.displayAvatarURL(),
-              })
-              .setColor(colorsEmbed["blue"]);
-            return await interaction.reply({ embeds: [embed] });
-          } else if (data.voted === 0) {
-            const link = new ButtonBuilder()
-              .setLabel("Vote")
-              .setURL("https://top.gg/bot/1191340237226520576")
-              .setStyle(ButtonStyle.Link)
-              .setEmoji("<:blue_hearty:1208680843959214161>");
-
-            const row = new ActionRowBuilder().addComponents(link);
-
-            // Manejar las interacciones de botones
-            const filter = (interaction) => {
-              return interaction.user.id === interaction.user.id;
-            };
-
-            const collector =
-              interaction.channel.createMessageComponentCollector({
-                filter,
-                time: 60000, // Tiempo de espera para la interacción
-              });
-
-            const embed = new EmbedBuilder()
-              .setColor(colorsEmbed["blue"])
-              .setTitle(language === "en" ? "Vote" : "Votar")
-              .setDescription(
-                language === "en"
-                  ? "You didn't vote yet. Vote for the bot and claim your vote reward! <3"
-                  : "No has votado aún. ¡Vota por el bot y reclama tu recompensa por votar! <3"
-              )
-              .setTimestamp()
-              .setFooter({
-                text: language === "en" ? "Vote" : "Votar",
-                iconURL: client.user.displayAvatarURL(),
-              });
-
-            await interaction.reply({ embeds: [embed], components: [row] });
-
-            collector.on("end", async () => {
-              // Limpiar los botones cuando la colección termina (después de 60 segundos en este caso)
-              await interaction.editReply({ components: [] });
-            });
-          }
+      const response = await fetch(
+        `https://top.gg/api/bots/${botId}/check?userId=${userId}`,
+        {
+          headers: {
+            Authorization: apiKey,
+          },
         }
-      } catch (error) {
-        console.error("Error al votar:", error);
-        await interaction.reply(
-          "An error occurred while voting. Pls contact the developer <@300969054649450496> <3"
-        );
+      );
+      if (response.ok) {
+        const data = await response.json();
+        if (data.voted === 1) {
+          // Consultar el item de recompensa diaria idUso 1001
+          const chest = await Item.find({ idUso: 1001 });
+
+          // Agregar el item al inventario del usuario
+          usuario.inventario.push(chest[0]);
+          usuario.lastVote = new Date();
+          // Guardar los cambios en el usuario
+          await usuario.save();
+          embed = new EmbedBuilder()
+            .setTitle(
+              language === "en"
+                ? "Vote reward claimed"
+                : "Recompensa por votar reclamada"
+            )
+            .addFields(
+              {
+                name: language === "en" ? "You've won:" : "Has ganado:",
+                value: `- <:masuno:1208716787148001320> ${
+                  language === "en" ? chest[0].nombre : chest[0].nombreES
+                } ${chest[0].emoji}`,
+              },
+              {
+                name:
+                  language === "en"
+                    ? "Thank you for voting!"
+                    : "¡Gracias por votar!",
+                value:
+                  language === "en"
+                    ? "You can vote again in 12 hours <:heart_pink:1237816836167307265>"
+                    : "Puedes votar de nuevo en 12 horas <:heart_pink:1237816836167307265>",
+              }
+            )
+            .setTimestamp()
+            .setFooter({
+              text: `${interaction.user.username} ${
+                language === "en" ? "vote reward" : "recompensa por votar"
+              }`,
+              iconURL: interaction.user.displayAvatarURL(),
+            })
+            .setColor(colorsEmbed["blue"]);
+          return await interaction.reply({ embeds: [embed] });
+        } else if (data.voted === 0) {
+          const link = new ButtonBuilder()
+            .setLabel("Vote")
+            .setURL("https://top.gg/bot/1191340237226520576")
+            .setStyle(ButtonStyle.Link)
+            .setEmoji("<:blue_hearty:1208680843959214161>");
+
+          const row = new ActionRowBuilder().addComponents(link);
+
+          // Manejar las interacciones de botones
+          const filter = (interaction) => {
+            return interaction.user.id === interaction.user.id;
+          };
+
+          const collector = interaction.channel.createMessageComponentCollector(
+            {
+              filter,
+              time: 60000, // Tiempo de espera para la interacción
+            }
+          );
+
+          const embed = new EmbedBuilder()
+            .setColor(colorsEmbed["blue"])
+            .setTitle(language === "en" ? "Vote" : "Votar")
+            .setDescription(
+              language === "en"
+                ? "You didn't vote yet. Vote for the bot and claim your vote reward! <3"
+                : "No has votado aún. ¡Vota por el bot y reclama tu recompensa por votar! <3"
+            )
+            .setTimestamp()
+            .setFooter({
+              text: language === "en" ? "Vote" : "Votar",
+              iconURL: client.user.displayAvatarURL(),
+            });
+
+          await interaction.reply({ embeds: [embed], components: [row] });
+
+          collector.on("end", async () => {
+            // Limpiar los botones cuando la colección termina (después de 60 segundos en este caso)
+            await interaction.editReply({ components: [] });
+          });
+        }
       }
     } catch (error) {
       console.error("Error al comprar un item:", error);
