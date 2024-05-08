@@ -27,11 +27,7 @@ module.exports = {
           "Tell your server administrator to run the /setup command to set up the bot"
         );
       }
-      if (!guild) {
-        return await interaction.reply(
-          "Tell your server administrator to run the /setup command to set up the bot"
-        );
-      }
+
       const language = guild.language;
 
       const link = new ButtonBuilder()
@@ -73,9 +69,9 @@ module.exports = {
         await interaction.editReply({ components: [] });
       });
     } catch (error) {
-      console.error("Error al obtener información del bot:", error);
+      console.error("Error al obtener información para donar:", error);
       await interaction.reply(
-        "There was an error while trying to view the bot's information. Pls contact the developer <@300969054649450496> <3"
+        "There was an error while trying to view the bot's donate information. Pls contact the developer <@300969054649450496> <3"
       );
     }
   },

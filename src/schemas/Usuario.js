@@ -28,6 +28,7 @@ const UsuarioSchema = new Schema({
   startedOn: { type: Date, default: Date.now },
   badges: { type: Array, default: [] },
   lastDaily: { type: Date, required: false },
+  lastVote: { type: Date, required: false },
   dailyStreak: { type: Number, default: 0 },
 });
 

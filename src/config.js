@@ -19,6 +19,9 @@ module.exports = {
       enabled: true,
       uri: process.env.MONGODB_URI,
     },
+    topgg: {
+      apiKey: process.env.API_KEY,
+    },
   },
   users: {
     developers: ["300969054649450496", "408366484717436938"],
