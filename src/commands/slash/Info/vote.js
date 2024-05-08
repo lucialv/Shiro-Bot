@@ -2,6 +2,9 @@ const {
   ChatInputCommandInteraction,
   SlashCommandBuilder,
   EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
 } = require("discord.js");
 const ExtendedClient = require("../../../class/ExtendedClient");
 const Item = require("../../../schemas/Item");
@@ -14,6 +17,9 @@ module.exports = {
   structure: new SlashCommandBuilder()
     .setName("vote")
     .setDescription("Vote for the bot and claim your vote reward"),
+  options: {
+    developers: true,
+  },
   /**
    * @param {ExtendedClient} client
    * @param {ChatInputCommandInteraction} interaction
