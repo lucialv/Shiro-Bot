@@ -86,7 +86,9 @@ module.exports = {
       // Agregar el item al inventario del usuario
       usuario.inventario.push(chest[0]);
       usuario.lastDaily = new Date();
-
+      if (usuario.dailyStreak === 0) {
+        usuario.dailyStreak === 1;
+      }
       // Guardar los cambios en el usuario
       await usuario.save();
       embed = new EmbedBuilder()
@@ -107,7 +109,9 @@ module.exports = {
             value:
               usuario.dailyStreak === "- 0"
                 ? "- 0 <:jettcry:1206206360782639144>"
-                : `- ${usuario.dailyStreak} ‎ <:streak:1208714834749825105>`,
+                : `- ${
+                    usuario.dailyStreak === 0 ? "1" : usuario.dailyStreak
+                  } ‎ <:streak:1208714834749825105>`,
           }
         )
 
