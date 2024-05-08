@@ -63,13 +63,14 @@ module.exports = {
       }
       const language = guildData.language;
 
-      if (!channelId === guildData.canal_pesca_1) {
+      if (channelId != guildData.canal_pesca_1) {
         return await interaction.reply(
           language === "en"
             ? "This command can only be executed in fishing channels."
             : "Este comando solo puede ser ejecutado en canales de pesca."
         );
       }
+      console.log(channelId, guildData.canal_pesca_1);
 
       const userId = interaction.user.id;
 
