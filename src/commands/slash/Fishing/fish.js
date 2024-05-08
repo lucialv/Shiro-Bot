@@ -374,17 +374,17 @@ module.exports = {
         // Añadir dinero al usuario
         let dineroGanado;
         if (rarezaAleatoria === "Common") {
-          dineroGanado = Math.floor(Math.random() * 10) + 1;
+          dineroGanado = Math.floor(Math.random() * 10) + 10;
         } else if (rarezaAleatoria === "Rare") {
-          dineroGanado = Math.floor(Math.random() * 15) + 1;
+          dineroGanado = Math.floor(Math.random() * 15) + 15;
         } else if (rarezaAleatoria === "Very rare") {
-          dineroGanado = Math.floor(Math.random() * 20) + 1;
+          dineroGanado = Math.floor(Math.random() * 20) + 20;
         } else if (rarezaAleatoria === "Epic") {
-          dineroGanado = Math.floor(Math.random() * 25) + 1;
+          dineroGanado = Math.floor(Math.random() * 25) + 25;
         } else if (rarezaAleatoria === "Legendary") {
-          dineroGanado = Math.floor(Math.random() * 35) + 1;
+          dineroGanado = Math.floor(Math.random() * 35) + 40;
         } else if (rarezaAleatoria === "Mitic") {
-          dineroGanado = Math.floor(Math.random() * 30) + 1;
+          dineroGanado = Math.floor(Math.random() * 30) + 70;
         }
         if (usuario.donatorPerks) {
           dineroGanado = dineroGanado * 2;
