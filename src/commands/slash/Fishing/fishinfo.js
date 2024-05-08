@@ -86,10 +86,8 @@ module.exports = {
       const embed = new EmbedBuilder()
         .setTitle(
           pez.renamed
-            ? `${pez.renamed} | (${pezInfo.nombre}) ${
-                pez.generoEmojis[pez.genero]
-              }`
-            : pezInfo.nombre + " " + pez.generoEmojis[pez.genero]
+            ? `${pez.renamed} | (${pezInfo.nombre}) ${generoEmojis[pez.genero]}`
+            : pezInfo.nombre + " " + generoEmojis[pez.genero]
         )
         .setDescription(
           `${language === "en" ? "Rarity" : "Rareza"}:  ${
