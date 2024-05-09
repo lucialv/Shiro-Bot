@@ -4,7 +4,7 @@ module.exports = {
     id: process.env.ID,
   },
   handler: {
-    prefix: "?",
+    prefix: "shi ",
     deploy: true,
     maintenance: false,
     maintenanceMessage:

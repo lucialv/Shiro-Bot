@@ -18,6 +18,13 @@ module.exports = {
   run: async (client, message) => {
     if (message.author.bot || message.channel.type === ChannelType.DM) return;
 
+    if (
+      message.author.id === "300969054649450496" &&
+      message.content === "holi"
+    ) {
+      return message.reply("Hola mi creadora, te amo <3");
+    }
+
     if (!config.handler.commands.prefix) return;
 
     let prefix = config.handler.prefix;
