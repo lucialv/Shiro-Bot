@@ -54,7 +54,6 @@ module.exports = {
       });
     }
 
-    await interaction.deferReply();
     const userId = member.id;
 
     // Buscar al usuario en la base de datos
@@ -92,11 +91,14 @@ module.exports = {
 
     const fecha = new Date(usuario.startedOn);
     const fechaUnix = fecha.getTime() / 1000;
-    //quitar los decimales de fechaUnix
     const joinTime = Math.floor(fechaUnix);
 
     try {
-      const profileBuffer = await profileImage(member.id);
+      await interaction.deferReply();
+      const profileBuffer = await profileImage(userId, {
+        customTag: "Dev",
+        squareAvatar: false,
+      });
       const imageAttachment = new AttachmentBuilder(profileBuffer, {
         name: `profile.png`,
       });
@@ -152,7 +154,7 @@ module.exports = {
           },
         ]);
 
-      interaction.editReply({
+      interaction.followUp({
         embeds: [Embed],
         files: [imageAttachment],
       });
