@@ -28,6 +28,10 @@ module.exports = {
         : message.author) ||
       message.author;
 
+    if (victim.id === message.author.id) {
+      return message.reply("You can't pat yourself!");
+    }
+
     let receiver = await Usuario.findOne({ idDiscord: victim.id });
 
     if (!receiver) {
