@@ -30,6 +30,21 @@ const UsuarioSchema = new Schema({
   lastDaily: { type: Date, required: false },
   lastVote: { type: Date, required: false },
   dailyStreak: { type: Number, default: 0 },
+  anime: {
+    pats: { type: Number, default: 0 },
+    hugs: [
+      {
+        userId: { type: String, required: false },
+        hugCount: { type: Number, default: 0 },
+      },
+    ],
+    kisses: [
+      {
+        userId: { type: String, required: false },
+        kissCount: { type: Number, default: 0 },
+      },
+    ],
+  },
 });
 
 module.exports = model("Usuario", UsuarioSchema);
