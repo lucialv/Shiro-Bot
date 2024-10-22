@@ -98,7 +98,7 @@ module.exports = {
     await giver.save();
     await receiver.save();
 
-    await fetch("https://cdn-anime.lucia-dev.com/pats/")
+    await fetch("https://cdn-anime.lucia-dev.com/hugs/")
       .then((res) => res.json())
       .then((body) => {
         const hugCount = givenHug ? givenHug.hugCount : 1; // Establece hugCount en 1 si no se encontró un abrazo previo
