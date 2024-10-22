@@ -56,7 +56,7 @@ module.exports = {
 
     await receiver.save();
 
-    await fetch("https://nekos.life/api/v2/img/pat")
+    await fetch("https://cdn-anime.lucia-dev.com/pats/")
       .then((res) => res.json())
       .then((body) => {
         const embed = new EmbedBuilder()

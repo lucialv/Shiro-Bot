@@ -98,7 +98,7 @@ module.exports = {
     await giver.save();
     await receiver.save();
 
-    await fetch("https://nekos.life/api/v2/img/hug")
+    await fetch("https://cdn-anime.lucia-dev.com/pats/")
       .then((res) => res.json())
       .then((body) => {
         const hugCount = givenHug ? givenHug.hugCount : 1; // Establece hugCount en 1 si no se encontró un abrazo previo
